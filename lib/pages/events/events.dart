@@ -1,0 +1,23 @@
+import 'package:dish_connect/widgets/custom_text.dart';
+import 'package:flutter/material.dart';
+
+class EventsPage extends StatefulWidget {
+  const EventsPage({Key? key}) : super(key: key);
+
+  @override
+  State<EventsPage> createState() => _EventsPageState();
+}
+
+class _EventsPageState extends State<EventsPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.orange,
+      body: Center(
+        child: CustomText(
+          text: "Events Page",
+        ),
+      ),
+    );
+  }
+}
