@@ -1,4 +1,5 @@
 import 'package:dish_connect/constants/colors.dart';
+import 'package:dish_connect/helpers/global_variables.dart';
 import 'package:dish_connect/helpers/responsiveness.dart';
 import 'package:dish_connect/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
@@ -67,7 +68,7 @@ AppBar topNavigationBar(BuildContext context, GlobalKey<ScaffoldState> key) =>
             child: ClipRRect(
               borderRadius: BorderRadius.circular(100.0), //add border radius
               child: Image.network(
-                'https://pbs.twimg.com/profile_images/543246840276086786/36i_Bdwg_400x400.jpeg',
+                profileImageURL,
                 width: 30,
                 height: 30,
               ),

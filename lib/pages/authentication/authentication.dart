@@ -1,16 +1,19 @@
 import 'package:dish_connect/constants/colors.dart';
+import 'package:dish_connect/helpers/global_variables.dart';
 import 'package:dish_connect/layout.dart';
 import 'package:dish_connect/routing/routes.dart';
 import 'package:dish_connect/widgets/custom_text.dart';
 import 'package:dish_connect/widgets/main_button.dart';
 import 'package:dish_connect/widgets/main_textfield.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/instance_manager.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:get/get.dart';
+import 'dart:async';
 
 class AuthenticationPage extends StatefulWidget {
   const AuthenticationPage({Key? key}) : super(key: key);
@@ -22,6 +25,27 @@ class AuthenticationPage extends StatefulWidget {
 class _AuthenticationPageState extends State<AuthenticationPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user == null) {
+        print('User is currently signed out!');
+      } else {
+        print('User is signed in!');
+        // Get.offAllNamed(HomePageRoute);
+      }
+    });
+
+    EasyLoading.addStatusCallback((status) {
+      print('EasyLoading Status $status');
+      if (status == EasyLoadingStatus.dismiss) {
+        print("done");
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +111,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                 ),
                 MainButton(
                   text: "Sign In",
-                  function: () {
+                  function: () async {
                     HapticFeedback.heavyImpact();
                     signIn();
                   },
@@ -132,27 +156,39 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
     );
   }
 
-  void signIn() {
+  void signIn() async {
     EasyLoading.show(status: "Signing In");
     String email = emailController.text;
     String password = passwordController.text;
     if (email != "" && password != "") {
-      // FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password)
-      // Get.offAllNamed(HomePageRoute);
+      try {
+        UserCredential userCredential = await FirebaseAuth.instance
+            .signInWithEmailAndPassword(email: email, password: password);
+        final ref = FirebaseDatabase.instance.ref();
+        final appIdSnapshot = await ref
+            .child("Users")
+            .child(FirebaseAuth.instance.currentUser!.uid)
+            .child("appId")
+            .get();
+        final profileSnapshot = await ref
+            .child("Apps")
+            .child(appIdSnapshot.value as String)
+            .child("appIcon")
+            .get();
+        profileImageURL = profileSnapshot.value as String;
+        EasyLoading.showSuccess("success!");
+        Get.offAllNamed(HomePageRoute);
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'user-not-found') {
+          EasyLoading.showError("No user found for that email.");
+        } else if (e.code == 'wrong-password') {
+          EasyLoading.showError("Wrong password provided for that user.");
+        } else {
+          EasyLoading.showError("Error, try again");
+        }
+      }
     } else {
       EasyLoading.showError("Fields cannot be empty");
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    EasyLoading.addStatusCallback((status) {
-      print('EasyLoading Status $status');
-      if (status == EasyLoadingStatus.dismiss) {
-        print("done");
-      }
-    });
-    // EasyLoading.showSuccess('Use in initState');
   }
 }
