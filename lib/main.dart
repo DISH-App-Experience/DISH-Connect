@@ -14,7 +14,6 @@ import 'package:get/route_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,7 +29,6 @@ void main() async {
   } else {
     await Firebase.initializeApp();
   }
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
   Get.put(MenuController());
   Get.put(NavigationController());
   runApp(
