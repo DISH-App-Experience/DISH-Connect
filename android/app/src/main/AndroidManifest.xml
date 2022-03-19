@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.dish_connect">
    <application
-        android:label="dish_connect"
+        android:label="DISH Connect"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
