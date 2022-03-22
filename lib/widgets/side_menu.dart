@@ -1,4 +1,5 @@
 import 'package:dish_connect/pages/authentication/authentication.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:dish_connect/constants/colors.dart';
 import 'package:dish_connect/constants/controllers.dart';
@@ -66,8 +67,9 @@ class SideMenu extends StatelessWidget {
               children: sideMenuItems
                   .map((item) => SideMenuItem(
                         name: item.name,
-                        onTap: () {
+                        onTap: () async {
                           if (item.route == AuthenticationPageRoute) {
+                            await FirebaseAuth.instance.signOut();
                             menuController
                                 .changeActiveItemTo(HomePageRouteDisplayName);
                             Get.offAllNamed(AuthenticationPageRoute);

@@ -6,9 +6,10 @@ class CustomText extends StatelessWidget {
   final double? size;
   final Color? color;
   final FontWeight? fontWeight;
+  final TextAlign? align;
 
   const CustomText(
-      {Key? key, this.text, this.size, this.color, this.fontWeight})
+      {Key? key, this.text, this.size, this.color, this.fontWeight, this.align})
       : super(key: key);
 
   @override
@@ -18,6 +19,7 @@ class CustomText extends StatelessWidget {
         : Colors.white;
     return Text(
       text ?? "",
+      textAlign: align,
       style: TextStyle(
         fontFamily: 'Inter',
         fontSize: size ?? 16,

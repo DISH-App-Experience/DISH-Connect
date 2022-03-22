@@ -2,10 +2,14 @@ import 'package:dish_connect/blocs/theme_provider.dart';
 import 'package:dish_connect/constants/colors.dart';
 import 'package:dish_connect/controllers/menu_controller.dart';
 import 'package:dish_connect/controllers/navigation_controller.dart';
+import 'package:dish_connect/helpers/global_variables.dart';
 import 'package:dish_connect/layout.dart';
 import 'package:dish_connect/pages/404/error_page.dart';
 import 'package:dish_connect/pages/authentication/authentication.dart';
+import 'package:dish_connect/pages/authentication/loading_page.dart';
+import 'package:dish_connect/pages/home/home.dart';
 import 'package:dish_connect/routing/routes.dart';
+import 'package:dish_connect/services/owner.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -66,16 +70,23 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     var isLight = Theme.of(context).brightness == Brightness.light;
-    Widget advance = AuthenticationPage();
-    String advanceRoute = AuthenticationPageRoute;
+    Widget authPage = AuthenticationPage();
+    String authRoute = AuthenticationPageRoute;
+    Widget loadingPage = LoadingPage();
+    String loadingRoute = LoadingPageRoute;
+    Widget homePage = SiteLayout();
+    String homeRoute = HomePageRoute;
     return Consumer<ThemeProvider>(builder: (context, provider, child) {
       return GetMaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'DISH Connect',
         builder: EasyLoading.init(),
         color: isLight ? backgroundLight : backgroundDark,
-        home: advance,
-        initialRoute: advanceRoute,
+        home:
+            FirebaseAuth.instance.currentUser != null ? loadingPage : authPage,
+        initialRoute: FirebaseAuth.instance.currentUser != null
+            ? loadingRoute
+            : authRoute,
         theme: ThemeData.light().copyWith(
           pageTransitionsTheme: const PageTransitionsTheme(
             builders: {
@@ -102,6 +113,14 @@ class _MyAppState extends State<MyApp> {
           GetPage(
             name: RootRoute,
             page: () => const SiteLayout(),
+          ),
+          GetPage(
+            name: SiteLayoutPageRoute,
+            page: () => const SiteLayout(),
+          ),
+          GetPage(
+            name: LoadingPageRoute,
+            page: () => const LoadingPage(),
           ),
           GetPage(
             name: AuthenticationPageRoute,
