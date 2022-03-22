@@ -37,6 +37,7 @@ class MainTextField extends StatelessWidget {
       cursorColor: mainBlue,
       cursorWidth: 2,
       style: TextStyle(
+        fontFamily: 'Inter',
         fontWeight: FontWeight.w500,
         fontSize: 15,
       ),

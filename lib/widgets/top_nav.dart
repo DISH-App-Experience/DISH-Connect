@@ -11,34 +11,26 @@ AppBar topNavigationBar(BuildContext context, GlobalKey<ScaffoldState> key) =>
         children: [
           Visibility(
             child: CustomText(
-              text: "DISH",
+              text: "${owner!.restaurant}",
               fontWeight: FontWeight.bold,
             ),
           ),
           Expanded(
             child: Container(),
           ),
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.settings,
-              color: Theme.of(context).brightness == Brightness.light
-                  ? navy500
-                  : Colors.white,
-            ),
-          ),
-          Stack(
-            children: [
-              IconButton(
-                icon: Icon(Icons.notifications),
-                color: Theme.of(context).brightness == Brightness.light
-                    ? navy500
-                    : Colors.white,
-                onPressed: () {
-                  print("hi");
-                },
+          MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: InkWell(
+              onTap: () {
+                print("hi there");
+              },
+              child: Image.asset(
+                Theme.of(context).brightness == Brightness.light
+                    ? 'assets/images/settings_light.png'
+                    : 'assets/images/settings_dark.png',
+                height: 30,
               ),
-            ],
+            ),
           ),
           SizedBox(
             width: 12,
@@ -53,12 +45,6 @@ AppBar topNavigationBar(BuildContext context, GlobalKey<ScaffoldState> key) =>
           SizedBox(
             width: 12,
           ),
-          // CustomText(
-          //   text: "Jorge Zapata",
-          // ),
-          // SizedBox(
-          //   width: 16,
-          // ),
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(
@@ -67,19 +53,20 @@ AppBar topNavigationBar(BuildContext context, GlobalKey<ScaffoldState> key) =>
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(100.0), //add border radius
-              child: Image.network(
-                profileImageURL,
-                width: 30,
-                height: 30,
-              ),
+              // child: Image.network(
+              //   owner!.imageURL,
+              //   width: 30,
+              //   height: 30,
+              // ),
             ),
           ),
         ],
       ),
       iconTheme: IconThemeData(
-          color: Theme.of(context).brightness == Brightness.light
-              ? navy500
-              : Colors.white),
+        color: Theme.of(context).brightness == Brightness.light
+            ? navy500
+            : Colors.white,
+      ),
       backgroundColor: Theme.of(context).brightness == Brightness.light
           ? backgroundLight
           : backgroundDark,

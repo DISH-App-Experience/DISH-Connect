@@ -2,6 +2,7 @@ import 'package:dish_connect/constants/colors.dart';
 import 'package:dish_connect/helpers/global_variables.dart';
 import 'package:dish_connect/layout.dart';
 import 'package:dish_connect/routing/routes.dart';
+import 'package:dish_connect/services/owner.dart';
 import 'package:dish_connect/widgets/custom_text.dart';
 import 'package:dish_connect/widgets/main_button.dart';
 import 'package:dish_connect/widgets/main_textfield.dart';
@@ -29,15 +30,6 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
   @override
   void initState() {
     super.initState();
-
-    FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      if (user == null) {
-        print('User is currently signed out!');
-      } else {
-        print('User is signed in!');
-        // Get.offAllNamed(HomePageRoute);
-      }
-    });
 
     EasyLoading.addStatusCallback((status) {
       print('EasyLoading Status $status');
@@ -164,20 +156,11 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
       try {
         UserCredential userCredential = await FirebaseAuth.instance
             .signInWithEmailAndPassword(email: email, password: password);
-        final ref = FirebaseDatabase.instance.ref();
-        final appIdSnapshot = await ref
-            .child("Users")
-            .child(FirebaseAuth.instance.currentUser!.uid)
-            .child("appId")
-            .get();
-        final profileSnapshot = await ref
-            .child("Apps")
-            .child(appIdSnapshot.value as String)
-            .child("appIcon")
-            .get();
-        profileImageURL = profileSnapshot.value as String;
-        EasyLoading.showSuccess("success!");
-        Get.offAllNamed(HomePageRoute);
+        getOwnerInformation();
+        Timer(Duration(seconds: 3), () {
+          EasyLoading.dismiss();
+          Get.toNamed(LoadingPageRoute);
+        });
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-not-found') {
           EasyLoading.showError("No user found for that email.");

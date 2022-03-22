@@ -24,6 +24,15 @@ const ManageFeaturesPageRoute = "/manage-features";
 const AuthenticationPageRouteDisplayName = "Log Out";
 const AuthenticationPageRoute = "/auth";
 
+const LoadingPageRouteDisplayName = "Loading";
+const LoadingPageRoute = "/loading";
+
+const MainPageRouteDisplayName = "Loading";
+const MainPageRoute = "/loading";
+
+const SiteLayoutPageRouteDisplayName = "Home";
+const SiteLayoutPageRoute = "/homee";
+
 class MenuItem {
   final String name;
   final String route;
