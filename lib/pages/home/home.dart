@@ -10,6 +10,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+import 'package:pie_chart/pie_chart.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -20,15 +22,58 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   var users = 0;
+  var appSessions = 0;
+  var reservationsBooked = 0;
+  var ordersPlaced = 0;
+  var calledRestaurants = 0;
+  var openedMenus = 0;
+
+  final dataMap = <String, double>{
+    "Male": 5,
+    "Female": 3,
+  };
+
+  final colorList = <Color>[
+    Color(0xffEC5858),
+    Color(0xff1CB0F6),
+  ];
+
+  ChartType? _chartType = ChartType.disc;
+  bool _showCenterText = true;
+  double? _ringStrokeWidth = 32;
+  double? _chartLegendSpacing = 32;
+  bool _showLegendsInRow = true;
+  bool _showLegends = true;
+
+  bool _showChartValueBackground = true;
+  bool _showChartValues = true;
+  bool _showChartValuesInPercentage = true;
+  bool _showChartValuesOutside = false;
+
+  bool _showGradientColors = false;
+
+  BoxShape? _legendShape = BoxShape.circle;
+  LegendPosition? _legendPosition = LegendPosition.bottom;
+
+  int key = 0;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    findAllUsers();
+    getAnalytics();
   }
 
-  void findAllUsers() {
+  void getAnalytics() {
+    findUsers();
+    findData("appSessions");
+    findData("reservationsBooked");
+    findData("ordersPlaced");
+    findData("calledRestaurants");
+    findData("openedMenus");
+  }
+
+  void findUsers() {
     FirebaseDatabase.instance
         .ref()
         .child("Apps")
@@ -40,6 +85,49 @@ class _HomePageState extends State<HomePage> {
         setState(() {
           users++;
         });
+      }
+    });
+  }
+
+  void findData(String analytic) {
+    FirebaseDatabase.instance
+        .ref()
+        .child("Analytics")
+        .child(analytic)
+        .onValue
+        .listen((event) {
+      for (final child in event.snapshot.children) {
+        var childValue = Map<String, dynamic>.from(child.value as Map);
+        var id = childValue["restaurantId"];
+        if (id == owner!.appId) {
+          switch (analytic) {
+            case "appSessions":
+              setState(() {
+                appSessions++;
+              });
+              break;
+            case "reservationsBooked":
+              setState(() {
+                reservationsBooked++;
+              });
+              break;
+            case "ordersPlaced":
+              setState(() {
+                ordersPlaced++;
+              });
+              break;
+            case "calledRestaurants":
+              setState(() {
+                calledRestaurants++;
+              });
+              break;
+            case "openedMenus":
+              setState(() {
+                openedMenus++;
+              });
+              break;
+          }
+        }
       }
     });
   }
@@ -209,6 +297,8 @@ class _HomePageState extends State<HomePage> {
     BuildContext context,
   ) {
     var isLight = Theme.of(context).brightness == Brightness.light;
+    var isSmall = MediaQuery.of(context).size.width < 1210;
+    print(MediaQuery.of(context).size.width);
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
@@ -222,66 +312,112 @@ class _HomePageState extends State<HomePage> {
             borderRadius: BorderRadius.circular(20),
           ),
           height: ((MediaQuery.of(context).size.width - 75) / 2),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              SizedBox(
-                height: 55,
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                  left: 15,
-                  right: 15,
-                ),
-                child: Container(
-                  child: Text(
-                    iconText,
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
-                      fontSize: 30,
+          child: isSmall
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      iconText,
+                      style: TextStyle(
+                        fontSize: 30,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                  ),
-                  width: ((MediaQuery.of(context).size.width - 75) / 2),
-                  height: 32,
+                  ],
+                )
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: 15,
+                        right: 15,
+                      ),
+                      child: Container(
+                        child: Text(
+                          iconText,
+                          textAlign: TextAlign.start,
+                          style: TextStyle(
+                            fontSize: 30,
+                          ),
+                        ),
+                        width: ((MediaQuery.of(context).size.width - 75) / 2),
+                        height: 32,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(
+                        top: 12,
+                        left: 15,
+                        right: 15,
+                      ),
+                      child: Container(
+                        child: CustomText(
+                          text: miniHeader,
+                          fontWeight: FontWeight.bold,
+                          size: 12,
+                        ),
+                        width: ((MediaQuery.of(context).size.width - 62.5) / 2),
+                        height: 13,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(
+                        top: 9,
+                        left: 15,
+                        right: 15,
+                        bottom: 12,
+                      ),
+                      child: Container(
+                        child: CustomText(
+                          text: mainHeader,
+                          color: mainBlue,
+                          fontWeight: FontWeight.bold,
+                          size: 30,
+                        ),
+                        width: ((MediaQuery.of(context).size.width - 75) / 2),
+                        height: 40,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                  top: 12,
-                  left: 15,
-                  right: 15,
-                ),
-                child: Container(
-                  child: CustomText(
-                    text: miniHeader,
-                    fontWeight: FontWeight.bold,
-                    size: 12,
-                  ),
-                  width: ((MediaQuery.of(context).size.width - 62.5) / 2),
-                  height: 13,
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                  top: 9,
-                  left: 15,
-                  right: 15,
-                  bottom: 25,
-                ),
-                child: Container(
-                  child: CustomText(
-                    text: mainHeader,
-                    color: mainBlue,
-                    fontWeight: FontWeight.bold,
-                    size: 30,
-                  ),
-                  width: ((MediaQuery.of(context).size.width - 75) / 2),
-                  height: 40,
-                ),
-              ),
-            ],
-          ),
         ),
+      ),
+    );
+  }
+
+  Widget analyticItem(String name, int value, isTop) {
+    NumberFormat myFormat = NumberFormat.decimalPattern('en_us');
+    String numberString = myFormat.format(value);
+    return Padding(
+      padding: EdgeInsets.only(
+        top: isTop ? 17 : 12,
+        left: 25,
+        right: 25,
+      ),
+      child: Stack(
+        children: [
+          Container(
+            child: CustomText(
+              text: name,
+              align: TextAlign.left,
+              color: Colors.white,
+              size: 12,
+            ),
+            width: 282,
+            height: 17,
+          ),
+          Container(
+            child: CustomText(
+              text: numberString,
+              align: TextAlign.right,
+              color: Colors.white,
+              size: 12,
+            ),
+            width: 282,
+            height: 17,
+          ),
+        ],
       ),
     );
   }
@@ -367,7 +503,62 @@ class _HomePageState extends State<HomePage> {
                                 fontWeight: FontWeight.bold,
                                 align: TextAlign.left,
                                 size: 30,
+                                color: isLight ? Colors.white : Colors.white,
                               ),
+                            ),
+                          ),
+                          analyticItem("Total Users:", users, true),
+                          analyticItem(
+                              "Total App Sessions:", appSessions, false),
+                          analyticItem("Reservations Booked:",
+                              reservationsBooked, false),
+                          analyticItem("Orders Placed:", ordersPlaced, false),
+                          analyticItem("Calls using Restaurant App:",
+                              calledRestaurants, false),
+                          analyticItem("Opened Menus:", openedMenus, false),
+                          Padding(
+                            padding: EdgeInsets.only(
+                              top: 25,
+                              left: 25,
+                              right: 25,
+                            ),
+                            child: PieChart(
+                              key: ValueKey(key),
+                              dataMap: dataMap,
+                              animationDuration: Duration(milliseconds: 800),
+                              chartLegendSpacing: _chartLegendSpacing!,
+                              chartRadius:
+                                  MediaQuery.of(context).size.width / 3.2 > 300
+                                      ? 300
+                                      : MediaQuery.of(context).size.width / 3.2,
+                              colorList: colorList,
+                              initialAngleInDegree: 0,
+                              chartType: _chartType!,
+                              centerText: _showCenterText
+                                  ? "User Gender Demographic"
+                                  : null,
+                              legendOptions: LegendOptions(
+                                showLegendsInRow: _showLegendsInRow,
+                                legendPosition: _legendPosition!,
+                                showLegends: _showLegends,
+                                legendShape: _legendShape == BoxShape.circle
+                                    ? BoxShape.circle
+                                    : BoxShape.rectangle,
+                                legendTextStyle: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              chartValuesOptions: ChartValuesOptions(
+                                showChartValueBackground:
+                                    _showChartValueBackground,
+                                showChartValues: _showChartValues,
+                                showChartValuesInPercentage:
+                                    _showChartValuesInPercentage,
+                                showChartValuesOutside: _showChartValuesOutside,
+                              ),
+                              ringStrokeWidth: _ringStrokeWidth!,
+                              emptyColor: Colors.transparent,
                             ),
                           ),
                         ],
@@ -379,10 +570,13 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       width: 332,
-                      height: 455,
+                      height: 650,
                     ),
                   ),
                 ],
+              ),
+              SizedBox(
+                height: 50,
               ),
             ],
           ),
