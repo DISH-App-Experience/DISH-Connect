@@ -33,6 +33,21 @@ const MainPageRoute = "/loading";
 const SiteLayoutPageRouteDisplayName = "Home";
 const SiteLayoutPageRoute = "/homee";
 
+const CustomizeThemePageRouteDisplayName = "Customize Theme";
+const CustomizeThemePageRoute = "/theme";
+
+const AboutUsPageRouteDisplayName = "About Us";
+const AboutUsPageRoute = "/about-us";
+
+const GalleryPageRouteDisplayName = "Image Gallery";
+const GalleryPageRoute = "/image-gallery";
+
+const LocationPageRouteDisplayName = "Locations";
+const LocationPageRoute = "/locations";
+
+const SettingsPageRouteDisplayName = "Settings";
+const SettingsPageRoute = "/settings";
+
 class MenuItem {
   final String name;
   final String route;
