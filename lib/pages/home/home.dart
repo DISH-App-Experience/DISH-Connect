@@ -1,7 +1,11 @@
 import 'package:dish_connect/constants/colors.dart';
+import 'package:dish_connect/constants/controllers.dart';
 import 'package:dish_connect/controllers/navigation_controller.dart';
 import 'package:dish_connect/helpers/global_variables.dart';
 import 'package:dish_connect/helpers/responsiveness.dart';
+import 'package:dish_connect/pages/home/about_us.dart';
+import 'package:dish_connect/pages/home/customize_theme.dart';
+import 'package:dish_connect/routing/routes.dart';
 import 'package:dish_connect/widgets/custom_text.dart';
 import 'package:dish_connect/routing/router.dart';
 import 'package:dish_connect/widgets/main_button.dart';
@@ -12,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:pie_chart/pie_chart.dart';
+import 'package:get/get.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -141,7 +146,28 @@ class _HomePageState extends State<HomePage> {
     var isLight = Theme.of(context).brightness == Brightness.light;
     return GestureDetector(
       onTap: () {
-        print("hi");
+        switch (mainHeader) {
+          case "Theme":
+            navigationController.navigateTo(CustomizeThemePageRoute);
+            break;
+          case "Menu":
+            var item = MenuItem(MenuPageRouteDisplayName, MenuPageRoute);
+            menuController.changeActiveItemTo(item.name);
+            navigationController.navigateTo(MenuPageRoute);
+            break;
+          case "About Us":
+            navigationController.navigateTo(AboutUsPageRoute);
+            break;
+          case "Image":
+            navigationController.navigateTo(GalleryPageRoute);
+            break;
+          case "Locations":
+            navigationController.navigateTo(LocationPageRoute);
+            break;
+          case "Settings":
+            navigationController.navigateTo(SettingsPageRoute);
+            break;
+        }
       },
       child: Padding(
         padding: EdgeInsets.only(
@@ -158,8 +184,11 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             children: [
               SizedBox(
-                height: 43,
+                height: 50,
               ),
+              // SizedBox(
+              //   height: 45,
+              // ),
               Padding(
                 padding: EdgeInsets.only(
                   left: 15,
@@ -228,7 +257,28 @@ class _HomePageState extends State<HomePage> {
     Color textColor = isLight ? navy500 : Colors.white;
     return GestureDetector(
       onTap: () {
-        print("hi");
+        switch (mainHeader) {
+          case "Theme":
+            navigationController.navigateTo(CustomizeThemePageRoute);
+            break;
+          case "Menu":
+            var item = MenuItem(MenuPageRouteDisplayName, MenuPageRoute);
+            menuController.changeActiveItemTo(item.name);
+            navigationController.navigateTo(MenuPageRoute);
+            break;
+          case "About Us":
+            navigationController.navigateTo(AboutUsPageRoute);
+            break;
+          case "Image":
+            navigationController.navigateTo(GalleryPageRoute);
+            break;
+          case "Locations":
+            navigationController.navigateTo(LocationPageRoute);
+            break;
+          case "Settings":
+            navigationController.navigateTo(SettingsPageRoute);
+            break;
+        }
       },
       child: Padding(
         padding: EdgeInsets.only(
@@ -303,7 +353,28 @@ class _HomePageState extends State<HomePage> {
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: () {
-          print("hi");
+          switch (mainHeader) {
+            case "Theme":
+              navigationController.navigateTo(CustomizeThemePageRoute);
+              break;
+            case "Menu":
+              var item = MenuItem(MenuPageRouteDisplayName, MenuPageRoute);
+              menuController.changeActiveItemTo(item.name);
+              navigationController.navigateTo(MenuPageRoute);
+              break;
+            case "About Us":
+              navigationController.navigateTo(AboutUsPageRoute);
+              break;
+            case "Image":
+              navigationController.navigateTo(GalleryPageRoute);
+              break;
+            case "Locations":
+              navigationController.navigateTo(LocationPageRoute);
+              break;
+            case "Settings":
+              navigationController.navigateTo(SettingsPageRoute);
+              break;
+          }
         },
         child: Container(
           width: 200,
