@@ -1,11 +1,11 @@
 import 'package:dish_connect/pages/authentication/authentication.dart';
 import 'package:dish_connect/pages/events/events.dart';
 import 'package:dish_connect/pages/features/features.dart';
-import 'package:dish_connect/pages/home/about_us.dart';
-import 'package:dish_connect/pages/home/customize_theme.dart';
+import 'package:dish_connect/pages/home/about/about_us.dart';
+import 'package:dish_connect/pages/home/gallery/images.dart';
 import 'package:dish_connect/pages/home/home.dart';
-import 'package:dish_connect/pages/home/images.dart';
-import 'package:dish_connect/pages/home/locations.dart';
+import 'package:dish_connect/pages/home/locations/locations.dart';
+import 'package:dish_connect/pages/home/theme/customize_theme.dart';
 import 'package:dish_connect/pages/menu/menu.dart';
 import 'package:dish_connect/pages/promos/promos.dart';
 import 'package:dish_connect/pages/reservations/reservations.dart';

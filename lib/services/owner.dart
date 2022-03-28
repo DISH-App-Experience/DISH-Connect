@@ -14,8 +14,3 @@ class OwnerServices {
     return Future<bool>.value(result);
   }
 }
-
-void getOwnerInformation() async {
-  owner?.imageURL =
-      "https://th.bing.com/th/id/OIP.g3HtByLwSRQjrxXiaCk0LgAAAA?pid=ImgDet&rs=1";
-}

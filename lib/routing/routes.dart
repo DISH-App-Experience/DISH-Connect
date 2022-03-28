@@ -40,7 +40,7 @@ const AboutUsPageRouteDisplayName = "About Us";
 const AboutUsPageRoute = "/about-us";
 
 const GalleryPageRouteDisplayName = "Image Gallery";
-const GalleryPageRoute = "/image-gallery";
+const GalleryPageRoute = "/imagegallery";
 
 const LocationPageRouteDisplayName = "Locations";
 const LocationPageRoute = "/locations";

@@ -27,6 +27,13 @@ dependencies:
   flutter_easyloading: ^3.0.3
   pie_chart:
   intl: ^0.17.0
+  image_picker: ^0.8.4+11
+  file_picker: ^4.5.1
+  image: ^3.0.5
+  quiver: ^3.0.1
+  basics: ^0.6.0
+  # cyclop:
+  #   git: https://github.com/JorgeZapata27/cyclop
 
 dev_dependencies:
   flutter_test:

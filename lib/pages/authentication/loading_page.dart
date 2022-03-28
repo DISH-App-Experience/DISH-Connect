@@ -1,11 +1,13 @@
 import 'dart:async';
-
 import 'package:dish_connect/constants/colors.dart';
 import 'package:dish_connect/constants/controllers.dart';
+import 'package:dish_connect/helpers/colors.dart';
 import 'package:dish_connect/helpers/global_variables.dart';
 import 'package:dish_connect/layout.dart';
 import 'package:dish_connect/models/owner.dart';
+import 'package:dish_connect/models/theme.dart';
 import 'package:dish_connect/pages/home/home.dart';
+import 'package:dish_connect/pages/home/theme/customize_theme.dart';
 import 'package:dish_connect/routing/routes.dart';
 import 'package:dish_connect/widgets/custom_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -61,13 +63,14 @@ class _LoadingPageState extends State<LoadingPage> {
                 resRef.child("appIcon").once().then(
                   (appIconValue) {
                     var imageUrl = appIconValue.snapshot.value as String;
+                    print("image url is" + imageUrl);
                     owner = Owner(
                       appId: appId,
                       name: name,
                       restaurant: restaurant,
                       uid: FirebaseAuth.instance.currentUser!.uid,
-                      imageURL: imageUrl,
                     );
+
                     Timer(Duration(seconds: 2), () {
                       Get.toNamed(SiteLayoutPageRoute);
                     });

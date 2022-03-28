@@ -1,11 +1,14 @@
 import 'package:dish_connect/constants/colors.dart';
 import 'package:dish_connect/constants/controllers.dart';
 import 'package:dish_connect/controllers/navigation_controller.dart';
+import 'package:dish_connect/helpers/colors.dart';
 import 'package:dish_connect/helpers/global_variables.dart';
 import 'package:dish_connect/helpers/responsiveness.dart';
-import 'package:dish_connect/pages/home/about_us.dart';
-import 'package:dish_connect/pages/home/customize_theme.dart';
+import 'package:dish_connect/models/theme.dart';
+import 'package:dish_connect/pages/home/about/about_us.dart';
+import 'package:dish_connect/pages/home/theme/customize_theme.dart';
 import 'package:dish_connect/routing/routes.dart';
+import 'package:dish_connect/services/image_services.dart';
 import 'package:dish_connect/widgets/custom_text.dart';
 import 'package:dish_connect/routing/router.dart';
 import 'package:dish_connect/widgets/main_button.dart';
@@ -14,6 +17,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:get/get.dart';
@@ -33,9 +37,12 @@ class _HomePageState extends State<HomePage> {
   var calledRestaurants = 0;
   var openedMenus = 0;
 
-  final dataMap = <String, double>{
-    "Male": 5,
-    "Female": 3,
+  double males = 0;
+  double females = 0;
+
+  late final dataMap = <String, double>{
+    "Male": males,
+    "Female": females,
   };
 
   final colorList = <Color>[
@@ -87,6 +94,22 @@ class _HomePageState extends State<HomePage> {
         .onValue
         .listen((event) {
       for (final child in event.snapshot.children) {
+        var childValue = Map<String, dynamic>.from(child.value as Map);
+        var gender = childValue["gender"] ?? "Male";
+        switch (gender) {
+          case "Male":
+            print("we got a male!");
+            setState(() {
+              males++;
+            });
+            break;
+          case "Female":
+            print("we got a female!");
+            setState(() {
+              females++;
+            });
+            break;
+        }
         setState(() {
           users++;
         });
@@ -158,7 +181,7 @@ class _HomePageState extends State<HomePage> {
           case "About Us":
             navigationController.navigateTo(AboutUsPageRoute);
             break;
-          case "Image":
+          case "Images":
             navigationController.navigateTo(GalleryPageRoute);
             break;
           case "Locations":
@@ -269,7 +292,7 @@ class _HomePageState extends State<HomePage> {
           case "About Us":
             navigationController.navigateTo(AboutUsPageRoute);
             break;
-          case "Image":
+          case "Images":
             navigationController.navigateTo(GalleryPageRoute);
             break;
           case "Locations":
@@ -365,7 +388,7 @@ class _HomePageState extends State<HomePage> {
             case "About Us":
               navigationController.navigateTo(AboutUsPageRoute);
               break;
-            case "Image":
+            case "Images":
               navigationController.navigateTo(GalleryPageRoute);
               break;
             case "Locations":
@@ -545,7 +568,7 @@ class _HomePageState extends State<HomePage> {
                           webSquare("🎨", "Customize", "Theme", context),
                           webSquare("📕", "Tailor Your", "Menu", context),
                           webSquare("🔎", "Write Your", "About Us", context),
-                          webSquare("📸", "Add Your", "Image", context),
+                          webSquare("📸", "Add Your", "Images", context),
                           webSquare("📍", "Add Your", "Locations", context),
                           webSquare("⚙", "Open", "Settings", context),
                         ],
@@ -671,7 +694,7 @@ class _HomePageState extends State<HomePage> {
               Column(
                 children: [
                   rectangle("Total Users", "${users}", context, true),
-                  square("📸", "Add Your", "Image", context),
+                  square("📸", "Add Your", "Images", context),
                   square("📍", "Add Your", "Locations", context),
                 ],
               ),
