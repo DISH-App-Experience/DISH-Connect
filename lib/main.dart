@@ -24,11 +24,14 @@ void main() async {
   if (kIsWeb) {
     await Firebase.initializeApp(
       options: const FirebaseOptions(
-          apiKey: "AIzaSyA2sL5q51LmueRGY6l8Q2tvH6KqSTLkaRI",
-          appId: "1:668635512839:web:0408c9fc54a820ba8aaaa2",
-          messagingSenderId: "668635512839",
-          projectId: "dish-c7c56",
-          databaseURL: "https://dish-c7c56-default-rtdb.firebaseio.com/"),
+        apiKey: "AIzaSyA2sL5q51LmueRGY6l8Q2tvH6KqSTLkaRI",
+        appId: "1:668635512839:web:0408c9fc54a820ba8aaaa2",
+        messagingSenderId: "668635512839",
+        projectId: "dish-c7c56",
+        databaseURL: "https://dish-c7c56-default-rtdb.firebaseio.com/",
+        storageBucket: "dish-c7c56.appspot.com",
+        measurementId: "G-0YPZJNKLN8",
+      ),
     );
   } else {
     await Firebase.initializeApp();
@@ -74,8 +77,6 @@ class _MyAppState extends State<MyApp> {
     String authRoute = AuthenticationPageRoute;
     Widget loadingPage = LoadingPage();
     String loadingRoute = LoadingPageRoute;
-    Widget homePage = SiteLayout();
-    String homeRoute = HomePageRoute;
     return Consumer<ThemeProvider>(builder: (context, provider, child) {
       return GetMaterialApp(
         debugShowCheckedModeBanner: false,

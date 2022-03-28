@@ -156,7 +156,6 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
       try {
         UserCredential userCredential = await FirebaseAuth.instance
             .signInWithEmailAndPassword(email: email, password: password);
-        getOwnerInformation();
         Timer(Duration(seconds: 3), () {
           EasyLoading.dismiss();
           Get.toNamed(LoadingPageRoute);
