@@ -11,6 +11,8 @@ import 'package:dish_connect/routing/routes.dart';
 import 'package:dish_connect/services/image_services.dart';
 import 'package:dish_connect/widgets/custom_text.dart';
 import 'package:dish_connect/routing/router.dart';
+import 'package:dish_connect/widgets/home/analytics_item.dart';
+import 'package:dish_connect/widgets/home/home_square.dart';
 import 'package:dish_connect/widgets/main_button.dart';
 import 'package:dish_connect/widgets/main_textfield.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,6 +23,8 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:get/get.dart';
+
+import '../../widgets/home/home_square_web.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -160,115 +164,6 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Widget square(
-    String iconText,
-    String miniHeader,
-    String mainHeader,
-    BuildContext context,
-  ) {
-    var isLight = Theme.of(context).brightness == Brightness.light;
-    return GestureDetector(
-      onTap: () {
-        switch (mainHeader) {
-          case "Theme":
-            navigationController.navigateTo(CustomizeThemePageRoute);
-            break;
-          case "Menu":
-            var item = MenuItem(MenuPageRouteDisplayName, MenuPageRoute);
-            menuController.changeActiveItemTo(item.name);
-            navigationController.navigateTo(MenuPageRoute);
-            break;
-          case "About Us":
-            navigationController.navigateTo(AboutUsPageRoute);
-            break;
-          case "Images":
-            navigationController.navigateTo(GalleryPageRoute);
-            break;
-          case "Locations":
-            navigationController.navigateTo(LocationPageRoute);
-            break;
-          case "Settings":
-            navigationController.navigateTo(SettingsPageRoute);
-            break;
-        }
-      },
-      child: Padding(
-        padding: EdgeInsets.only(
-          top: 25,
-          left: 25,
-        ),
-        child: Container(
-          width: ((MediaQuery.of(context).size.width - 75) / 2),
-          decoration: BoxDecoration(
-            color: isLight ? blue100 : Colors.black,
-            borderRadius: BorderRadius.circular(25),
-          ),
-          height: ((MediaQuery.of(context).size.width - 75) / 2),
-          child: Column(
-            children: [
-              SizedBox(
-                height: 50,
-              ),
-              // SizedBox(
-              //   height: 45,
-              // ),
-              Padding(
-                padding: EdgeInsets.only(
-                  left: 15,
-                  right: 15,
-                ),
-                child: Container(
-                  child: Text(
-                    iconText,
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
-                      fontSize: 30,
-                    ),
-                  ),
-                  width: ((MediaQuery.of(context).size.width - 75) / 2),
-                  height: 32,
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                  top: 12,
-                  left: 15,
-                  right: 15,
-                ),
-                child: Container(
-                  child: CustomText(
-                    text: miniHeader,
-                    fontWeight: FontWeight.bold,
-                    size: 12,
-                  ),
-                  width: ((MediaQuery.of(context).size.width - 62.5) / 2),
-                  height: 13,
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                  top: 9,
-                  left: 15,
-                  right: 15,
-                ),
-                child: Container(
-                  child: CustomText(
-                    text: mainHeader,
-                    color: mainBlue,
-                    fontWeight: FontWeight.bold,
-                    size: 25,
-                  ),
-                  width: ((MediaQuery.of(context).size.width - 75) / 2),
-                  height: 32,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget rectangle(
     String miniHeader,
     String mainHeader,
@@ -359,159 +254,6 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget webSquare(
-    String iconText,
-    String miniHeader,
-    String mainHeader,
-    BuildContext context,
-  ) {
-    var isLight = Theme.of(context).brightness == Brightness.light;
-    var isSmall = MediaQuery.of(context).size.width < 1210;
-    print(MediaQuery.of(context).size.width);
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTap: () {
-          switch (mainHeader) {
-            case "Theme":
-              navigationController.navigateTo(CustomizeThemePageRoute);
-              break;
-            case "Menu":
-              var item = MenuItem(MenuPageRouteDisplayName, MenuPageRoute);
-              menuController.changeActiveItemTo(item.name);
-              navigationController.navigateTo(MenuPageRoute);
-              break;
-            case "About Us":
-              navigationController.navigateTo(AboutUsPageRoute);
-              break;
-            case "Images":
-              navigationController.navigateTo(GalleryPageRoute);
-              break;
-            case "Locations":
-              navigationController.navigateTo(LocationPageRoute);
-              break;
-            case "Settings":
-              navigationController.navigateTo(SettingsPageRoute);
-              break;
-          }
-        },
-        child: Container(
-          width: 200,
-          decoration: BoxDecoration(
-            color: isLight ? blue100 : Colors.black,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          height: ((MediaQuery.of(context).size.width - 75) / 2),
-          child: isSmall
-              ? Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      iconText,
-                      style: TextStyle(
-                        fontSize: 30,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                )
-              : Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(
-                        left: 15,
-                        right: 15,
-                      ),
-                      child: Container(
-                        child: Text(
-                          iconText,
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                            fontSize: 30,
-                          ),
-                        ),
-                        width: ((MediaQuery.of(context).size.width - 75) / 2),
-                        height: 32,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(
-                        top: 12,
-                        left: 15,
-                        right: 15,
-                      ),
-                      child: Container(
-                        child: CustomText(
-                          text: miniHeader,
-                          fontWeight: FontWeight.bold,
-                          size: 12,
-                        ),
-                        width: ((MediaQuery.of(context).size.width - 62.5) / 2),
-                        height: 13,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(
-                        top: 9,
-                        left: 15,
-                        right: 15,
-                        bottom: 12,
-                      ),
-                      child: Container(
-                        child: CustomText(
-                          text: mainHeader,
-                          color: mainBlue,
-                          fontWeight: FontWeight.bold,
-                          size: 30,
-                        ),
-                        width: ((MediaQuery.of(context).size.width - 75) / 2),
-                        height: 40,
-                      ),
-                    ),
-                  ],
-                ),
-        ),
-      ),
-    );
-  }
-
-  Widget analyticItem(String name, int value, isTop) {
-    NumberFormat myFormat = NumberFormat.decimalPattern('en_us');
-    String numberString = myFormat.format(value);
-    return Padding(
-      padding: EdgeInsets.only(
-        top: isTop ? 17 : 12,
-        left: 25,
-        right: 25,
-      ),
-      child: Stack(
-        children: [
-          Container(
-            child: CustomText(
-              text: name,
-              align: TextAlign.left,
-              color: Colors.white,
-              size: 12,
-            ),
-            width: 282,
-            height: 17,
-          ),
-          Container(
-            child: CustomText(
-              text: numberString,
-              align: TextAlign.right,
-              color: Colors.white,
-              size: 12,
-            ),
-            width: 282,
-            height: 17,
-          ),
-        ],
       ),
     );
   }
