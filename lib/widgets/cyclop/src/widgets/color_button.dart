@@ -22,6 +22,7 @@ class ColorButton extends StatefulWidget {
   final ColorPickerConfig config;
   final Set<Color> swatches;
   final Widget child;
+  final Function selected;
 
   final ValueChanged<Color> onColorChanged;
 
@@ -35,6 +36,7 @@ class ColorButton extends StatefulWidget {
     required this.color,
     required this.onColorChanged,
     required this.child,
+    required this.selected,
     this.onSwatchesChanged,
     this.elevation = 3,
     this.decoration,
@@ -83,7 +85,10 @@ class _ColorButtonState extends State<ColorButton> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-        onTapDown: (details) => _colorPick(context, details),
+        onTapDown: (details) {
+          widget.selected();
+          _colorPick(context, details);
+        },
         child: widget.child,
       );
 
