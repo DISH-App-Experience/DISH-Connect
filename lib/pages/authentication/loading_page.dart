@@ -72,7 +72,10 @@ class _LoadingPageState extends State<LoadingPage> {
                     );
 
                     Timer(Duration(seconds: 2), () {
-                      Get.toNamed(SiteLayoutPageRoute);
+                      Get.off(
+                        SiteLayout(),
+                        fullscreenDialog: true,
+                      );
                     });
                   },
                 );

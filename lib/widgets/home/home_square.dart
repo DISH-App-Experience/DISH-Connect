@@ -3,6 +3,7 @@ import 'package:dish_connect/constants/controllers.dart';
 import 'package:dish_connect/routing/routes.dart';
 import 'package:dish_connect/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
 
 Widget square(
   String iconText,
@@ -11,11 +12,14 @@ Widget square(
   BuildContext context,
 ) {
   var isLight = Theme.of(context).brightness == Brightness.light;
+  var length = ((MediaQuery.of(context).size.width - 75) / 2);
   return GestureDetector(
     onTap: () {
       switch (mainHeader) {
         case "Theme":
-          navigationController.navigateTo(CustomizeThemePageRoute);
+          // navigationController.navigateTo(CustomizeThemePageRoute);
+          Navigator.pushNamed(context, CustomizeThemePageRoute);
+          // Get.off
           break;
         case "Menu":
           var item = MenuItem(MenuPageRouteDisplayName, MenuPageRoute);
@@ -42,20 +46,17 @@ Widget square(
         left: 25,
       ),
       child: Container(
-        width: ((MediaQuery.of(context).size.width - 75) / 2),
         decoration: BoxDecoration(
           color: isLight ? blue100 : Colors.black,
           borderRadius: BorderRadius.circular(25),
         ),
-        height: ((MediaQuery.of(context).size.width - 75) / 2),
+        width: length,
+        height: length,
         child: Column(
           children: [
             SizedBox(
-              height: 35,
+              height: length * 0.28,
             ),
-            // SizedBox(
-            //   height: 45,
-            // ),
             Padding(
               padding: EdgeInsets.only(
                 left: 15,
