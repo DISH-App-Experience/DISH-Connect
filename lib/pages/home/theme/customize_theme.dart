@@ -12,6 +12,7 @@ import 'package:dish_connect/widgets/cyclop/src/widgets/color_button.dart';
 import 'package:dish_connect/widgets/cyclop/src/widgets/eyedrop/eye_dropper_layer.dart';
 import 'package:dish_connect/widgets/navigation_bar.dart';
 import 'package:dish_connect/widgets/theme/color_row_web.dart';
+import 'package:dish_connect/widgets/theme/crop_util.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -20,11 +21,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:async';
 import 'package:path/path.dart';
-
 import '../../../widgets/theme/color_row.dart';
+import '../../../widgets/theme/crop_util.dart';
 
 AppTheme? appTheme;
 
@@ -109,38 +111,66 @@ class _CustomizeThemePageState extends State<CustomizeThemePage> {
       allowMultiple: false,
     );
     if (result != null && result.files.isNotEmpty) {
-      final fileBytes = result.files.first.bytes;
-      final fileName = result.files.first.name;
+      File? croppedImage =
+          await ImagesCropper.cropImage(XFile(result.files.first.path!));
 
-      // upload file
-      await FirebaseStorage.instance
-          .ref('App/${owner!.appId}/appIcon')
-          .putData(fileBytes!);
-      String downloadURL = await FirebaseStorage.instance
-          .ref('App/${owner!.appId}/appIcon')
-          .getDownloadURL();
-      FirebaseDatabase.instance
-          .ref()
-          .child("Apps")
-          .child(owner!.appId)
-          .child("appIcon")
-          .set(downloadURL);
-      setState(() {
-        this.downloadURL = downloadURL;
-      });
+      if (croppedImage != null) {
+        final fileBytes = result.files.first.bytes;
+        final fileName = result.files.first.name;
+        // upload file
+        await FirebaseStorage.instance
+            .ref('App/${owner!.appId}/appIcon')
+            .putData(fileBytes!);
+        String downloadURL = await FirebaseStorage.instance
+            .ref('App/${owner!.appId}/appIcon')
+            .getDownloadURL();
+        FirebaseDatabase.instance
+            .ref()
+            .child("Apps")
+            .child(owner!.appId)
+            .child("appIcon")
+            .set(downloadURL);
+        setState(() {
+          this.downloadURL = downloadURL;
+        });
+      } else {
+        final fileBytes = result.files.first.bytes;
+        final fileName = result.files.first.name;
+        // upload file
+        await FirebaseStorage.instance
+            .ref('App/${owner!.appId}/appIcon')
+            .putData(fileBytes!);
+        String downloadURL = await FirebaseStorage.instance
+            .ref('App/${owner!.appId}/appIcon')
+            .getDownloadURL();
+        FirebaseDatabase.instance
+            .ref()
+            .child("Apps")
+            .child(owner!.appId)
+            .child("appIcon")
+            .set(downloadURL);
+        setState(() {
+          this.downloadURL = downloadURL;
+        });
+      }
     }
   }
 
   Future pickImage() async {
-    try {
-      final ImagePicker _picker = ImagePicker();
-      final image = await _picker.pickImage(source: ImageSource.gallery);
-      if (image == null) return;
+    final ImagePicker _picker = ImagePicker();
+    final image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image == null) return;
+    File? croppedImage = await ImagesCropper.cropImage(
+      image,
+    );
+    if (croppedImage != null) {
+      final imageTemp = File(croppedImage.path);
+      setState(() => this.image = imageTemp);
+      uploadImageToFirebase(imageTemp);
+    } else {
       final imageTemp = File(image.path);
       setState(() => this.image = imageTemp);
       uploadImageToFirebase(imageTemp);
-    } on PlatformException catch (e) {
-      print("failed to pick image: $e");
     }
   }
 
@@ -498,7 +528,7 @@ class _CustomizeThemePageState extends State<CustomizeThemePage> {
                                 print('hi there');
                                 if (kIsWeb) {
                                   print("is web");
-                                  selectFile();
+                                  pickImage();
                                 } else {
                                   print("is not web");
                                   pickImage();
@@ -692,17 +722,6 @@ class _CustomizeThemePageState extends State<CustomizeThemePage> {
                     ),
                     SizedBox(
                       height: 50,
-                    ),
-                    SizedBox(
-                      height: 50,
-                    ),
-                    EyedropperButton(
-                      icon: Icons.colorize,
-                      onColor: (val) {
-                        setState(() {
-                          this.themeColor = val;
-                        });
-                      },
                     ),
                   ],
                 ),
