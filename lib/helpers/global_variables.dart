@@ -7,8 +7,9 @@ Owner? owner;
 final database =
     FirebaseDatabase.instance.ref().child("Apps").child(owner!.appId);
 
-final themeRef = FirebaseDatabase.instance
-    .ref()
-    .child("Apps")
-    .child(owner!.appId)
-    .child("theme");
+final rootRef =
+    FirebaseDatabase.instance.ref().child("Apps").child(owner!.appId);
+
+final themeRef = rootRef.child("theme");
+
+final aboutRef = rootRef.child("about");

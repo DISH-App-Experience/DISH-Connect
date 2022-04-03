@@ -8,6 +8,7 @@ class MainTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final TextEditingController? controller;
   final Function()? function;
+  final Function()? onEditingCompletes;
 
   const MainTextField({
     Key? key,
@@ -17,6 +18,7 @@ class MainTextField extends StatelessWidget {
     this.isBirthday,
     this.function,
     this.controller,
+    this.onEditingCompletes,
   }) : super(key: key);
 
   @override
@@ -75,6 +77,11 @@ class MainTextField extends StatelessWidget {
       ),
       obscureText: obscureText!,
       controller: controller,
+      onChanged: (s) {
+        if (onEditingCompletes != null) {
+          onEditingCompletes!();
+        }
+      },
     );
   }
 }
