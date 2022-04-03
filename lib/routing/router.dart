@@ -3,6 +3,7 @@ import 'package:dish_connect/pages/events/events.dart';
 import 'package:dish_connect/pages/features/features.dart';
 import 'package:dish_connect/pages/home/about/about_us.dart';
 import 'package:dish_connect/pages/home/gallery/images.dart';
+import 'package:dish_connect/pages/home/gallery/view_image.dart';
 import 'package:dish_connect/pages/home/home.dart';
 import 'package:dish_connect/pages/home/locations/locations.dart';
 import 'package:dish_connect/pages/home/theme/customize_theme.dart';
@@ -39,6 +40,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return getPageRoute(LocationManagerPage());
     case SettingsPageRoute:
       return getPageRoute(SettingsPage());
+    case ViewImagePageRoute:
+      return getPageRoute(ViewGalleryImageView());
     default:
       return getPageRoute(HomePage());
   }
