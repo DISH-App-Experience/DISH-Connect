@@ -2,7 +2,7 @@ import 'package:dish_connect/widgets/big_text_field.dart';
 import 'package:dish_connect/widgets/main_textfield.dart';
 import 'package:flutter/material.dart';
 
-Widget textFieldRow(
+Widget webTextFieldRow(
   String placeholder,
   bool isBig,
   TextInputType keyboardType,
@@ -20,6 +20,7 @@ Widget textFieldRow(
   }
   return Container(
     height: height,
+    width: 725,
     child: Column(
       children: [
         SizedBox(

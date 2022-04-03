@@ -8,6 +8,7 @@ class BigTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final TextEditingController? controller;
   final Function()? function;
+  final Function()? onEditingCompletes;
 
   const BigTextField({
     Key? key,
@@ -17,6 +18,7 @@ class BigTextField extends StatelessWidget {
     this.isBirthday,
     this.function,
     this.controller,
+    this.onEditingCompletes,
   }) : super(key: key);
 
   @override
@@ -51,6 +53,7 @@ class BigTextField extends StatelessWidget {
           contentPadding: EdgeInsets.only(
             top: 16,
             left: 16,
+            right: 16,
           ),
           hintText: hintText,
           hintStyle: TextStyle(
@@ -84,6 +87,11 @@ class BigTextField extends StatelessWidget {
         ),
         obscureText: obscureText!,
         controller: controller,
+        onChanged: (s) {
+          if (onEditingCompletes != null) {
+            onEditingCompletes!();
+          }
+        },
       ),
     );
   }
