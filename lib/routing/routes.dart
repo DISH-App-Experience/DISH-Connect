@@ -48,6 +48,9 @@ const LocationPageRoute = "/locations";
 const SettingsPageRouteDisplayName = "Settings";
 const SettingsPageRoute = "/settings";
 
+const ViewImagePageRouteDisplayName = "View Image";
+const ViewImagePageRoute = "/view-image";
+
 class MenuItem {
   final String name;
   final String route;
