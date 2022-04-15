@@ -13,3 +13,5 @@ final rootRef =
 final themeRef = rootRef.child("theme");
 
 final aboutRef = rootRef.child("about");
+
+final locationRef = rootRef.child("locations");

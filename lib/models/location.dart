@@ -8,6 +8,14 @@ class Location {
   final String uid;
   final String zipcode;
 
-  Location(this.city, this.image, this.lat, this.long, this.state, this.street,
-      this.uid, this.zipcode);
+  Location(
+    this.city,
+    this.image,
+    this.lat,
+    this.long,
+    this.state,
+    this.street,
+    this.uid,
+    this.zipcode,
+  );
 }
