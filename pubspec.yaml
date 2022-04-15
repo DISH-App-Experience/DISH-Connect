@@ -33,6 +33,8 @@ dependencies:
   quiver: ^3.0.1
   basics: ^0.6.0
   image_cropper: ^1.5.0
+  universal_html: ^2.0.8
+  http:
   # cyclop:
   #   git: https://github.com/JorgeZapata27/cyclop
 

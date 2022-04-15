@@ -473,7 +473,6 @@ class _CustomizeThemePageState extends State<CustomizeThemePage> {
                 ),
               )
             : SingleChildScrollView(
-                physics: NeverScrollableScrollPhysics(),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,

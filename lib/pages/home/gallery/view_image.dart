@@ -1,5 +1,7 @@
 import 'package:dish_connect/constants/colors.dart';
+import 'package:dish_connect/helpers/global_variables.dart';
 import 'package:dish_connect/widgets/custom_back_button.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/instance_manager.dart';
@@ -14,6 +16,7 @@ class ViewGalleryImageView extends StatefulWidget {
 
 class _ViewGalleryImageViewState extends State<ViewGalleryImageView> {
   var imageUrl = "";
+  dynamic argumentData = Get.arguments;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +40,7 @@ class _ViewGalleryImageViewState extends State<ViewGalleryImageView> {
                   color: mainBlue,
                   child: Container(
                     child: Image.network(
-                      "${Get.arguments}",
+                      "${argumentData[0]["gallery-image-url"]}",
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -63,7 +66,6 @@ class _ViewGalleryImageViewState extends State<ViewGalleryImageView> {
                 ),
               ),
               onTap: () {
-                Get.back();
                 showCupertinoDialog<void>(
                   context: context,
                   builder: (BuildContext context) => CupertinoAlertDialog(
@@ -79,6 +81,13 @@ class _ViewGalleryImageViewState extends State<ViewGalleryImageView> {
                       CupertinoDialogAction(
                         child: const Text('Yes, Delete'),
                         onPressed: () {
+                          FirebaseDatabase.instance
+                              .ref()
+                              .child("Apps")
+                              .child(owner!.appId)
+                              .child("photos")
+                              .child(argumentData[0]["gallery-image-key"])
+                              .remove();
                           Get.back();
                         },
                       )

@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:dish_connect/helpers/global_variables.dart';
 import 'package:dish_connect/models/image.dart';
 import 'package:dish_connect/pages/home/gallery/view_image.dart';
+import 'package:dish_connect/pages/home/gallery/web_images.dart';
 import 'package:dish_connect/routing/routes.dart';
 import 'package:dish_connect/services/image_services.dart';
+import 'package:dish_connect/services/web_work.dart';
 import 'package:dish_connect/widgets/navigation_bar.dart';
 import 'package:dish_connect/widgets/theme/crop_util.dart';
 import 'package:dish_connect/widgets/top_nav.dart';
@@ -37,82 +39,12 @@ class _ImageGalleryState extends State<ImageGallery> {
     super.initState();
   }
 
-  Future selectFile() async {
-    print("hi there");
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.image,
-      allowMultiple: false,
-    );
-    if (result != null && result.files.isNotEmpty) {
-      File? croppedImage =
-          await ImagesCropper.cropImage(XFile(result.files.first.path!));
-      final newPostKey = FirebaseDatabase.instance
-          .ref()
-          .child("App")
-          .child(owner!.appId)
-          .child("photos")
-          .push()
-          .key;
-
-      if (croppedImage != null) {
-        final fileBytes = result.files.first.bytes;
-        final fileName = result.files.first.name;
-        // upload file
-        await FirebaseStorage.instance
-            .ref('App/${owner!.appId}/photos/${newPostKey}')
-            .putData(fileBytes!);
-        String downloadURL = await FirebaseStorage.instance
-            .ref('App/${owner!.appId}/photos/${newPostKey}')
-            .getDownloadURL();
-
-        final postData = {
-          'url': downloadURL,
-          'key': newPostKey,
-        };
-        FirebaseDatabase.instance
-            .ref()
-            .child("Apps")
-            .child(owner!.appId)
-            .child("photos")
-            .child(newPostKey!)
-            .set(postData);
-      } else {
-        final fileBytes = result.files.first.bytes;
-        final fileName = result.files.first.name;
-        // upload file
-        await FirebaseStorage.instance
-            .ref('App/${owner!.appId}/photos/${newPostKey}')
-            .putData(fileBytes!);
-        String downloadURL = await FirebaseStorage.instance
-            .ref('App/${owner!.appId}/photos/${newPostKey}')
-            .getDownloadURL();
-
-        final postData = {
-          'url': downloadURL,
-          'key': newPostKey,
-        };
-        FirebaseDatabase.instance
-            .ref()
-            .child("Apps")
-            .child(owner!.appId)
-            .child("photos")
-            .child(newPostKey!)
-            .set(postData);
-      }
-    }
-  }
-
   Future pickImage() async {
+    print("picking image");
     final ImagePicker _picker = ImagePicker();
     final image = await _picker.pickImage(source: ImageSource.gallery);
-    if (image == null) return;
-    File? croppedImage = await ImagesCropper.cropImage(
-      image,
-    );
-    if (croppedImage != null) {
-      final imageTemp = File(croppedImage.path);
-      uploadImageToFirebase(imageTemp);
-    } else {
+    if (image != null) {
+      print("passed null");
       final imageTemp = File(image.path);
       uploadImageToFirebase(imageTemp);
     }
@@ -139,7 +71,7 @@ class _ImageGalleryState extends State<ImageGallery> {
           .ref('App/${owner!.appId}/photos/${newPostKey}')
           .getDownloadURL();
       final postData = {
-        'url': downloadURL!,
+        'url': downloadURL,
         'key': newPostKey,
       };
       FirebaseDatabase.instance
@@ -203,6 +135,13 @@ class _ImageGalleryState extends State<ImageGallery> {
                     cursor: SystemMouseCursors.click,
                     child: GestureDetector(
                       onTap: () {
+                        FirebaseDatabase.instance
+                            .ref()
+                            .child("Apps")
+                            .child(owner!.appId)
+                            .child("photos")
+                            .child(key)
+                            .remove();
                         Navigator.pop(context);
                       },
                       child: InkWell(
@@ -239,10 +178,9 @@ class _ImageGalleryState extends State<ImageGallery> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: mainBlue,
         elevation: 0,
-        onPressed: () {
+        onPressed: () async {
           if (kIsWeb) {
-            print("selecting file");
-            selectFile();
+            uploadToStorage();
           } else {
             pickImage();
           }
@@ -303,7 +241,12 @@ class _ImageGalleryState extends State<ImageGallery> {
                               if (isSmall) {
                                 Get.to(
                                   ViewGalleryImageView(),
-                                  arguments: image.url,
+                                  arguments: [
+                                    {
+                                      "gallery-image-key": image.key,
+                                      "gallery-image-url": image.url,
+                                    },
+                                  ],
                                 );
                               } else {
                                 showImagePopup(
