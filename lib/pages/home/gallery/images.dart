@@ -225,7 +225,6 @@ class _ImageGalleryState extends State<ImageGallery> {
                     });
                     return GridView.builder(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
                       itemCount: images.length,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: isSmall ? 2 : 6,
