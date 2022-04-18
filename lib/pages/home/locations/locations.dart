@@ -3,6 +3,7 @@ import 'package:dish_connect/models/location.dart';
 import 'package:dish_connect/widgets/navigation_bar.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:dish_connect/constants/colors.dart';
 import 'package:dish_connect/widgets/custom_back_button.dart';
@@ -48,11 +49,14 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
                         (snapshot.data! as DatabaseEvent).snapshot.value
                             as Map<dynamic, dynamic>);
                     myImages.forEach((key, value) {
+                      print("fioudn location");
                       final cur = Map<String, dynamic>.from(value);
+                      print("city");
+                      print(cur["city"]);
                       locations.add(
                         Location(
                           cur["city"],
-                          cur["city"],
+                          cur["image"],
                           cur["lat"],
                           cur["long"],
                           cur["state"],
@@ -64,7 +68,6 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
                     });
                     return GridView.builder(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
                       itemCount: locations.length,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: isSmall ? 2 : 4,
@@ -92,13 +95,13 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
                               ),
                               height: 200,
                               width: 200,
-                              child: ClipRRect(
-                                child: Image.network(
-                                  location.image,
-                                  fit: BoxFit.fill,
-                                ),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
+                              // child: ClipRRect(
+                              //   child: Image.network(
+                              //     location.image,
+                              //     fit: BoxFit.fill,
+                              //   ),
+                              //   borderRadius: BorderRadius.circular(20),
+                              // ),
                             ),
                           ),
                         );
