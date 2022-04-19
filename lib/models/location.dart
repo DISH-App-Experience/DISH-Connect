@@ -6,7 +6,7 @@ class Location {
   final String state;
   final String street;
   final String uid;
-  final String zipcode;
+  final int zipcode;
 
   Location(
     this.city,

@@ -15,3 +15,17 @@ Widget navigationBar(BuildContext context, String title) => Container(
         ),
       ),
     );
+
+Widget smallNavigationBar(BuildContext context, String title) => Container(
+      color: Colors.transparent,
+      child: Padding(
+        padding: EdgeInsets.only(
+          top: 15,
+        ),
+        child: CustomText(
+          fontWeight: FontWeight.bold,
+          size: 17,
+          text: title,
+        ),
+      ),
+    );
