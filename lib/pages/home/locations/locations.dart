@@ -1,6 +1,9 @@
 import 'package:dish_connect/helpers/global_variables.dart';
 import 'package:dish_connect/models/location.dart';
 import 'package:dish_connect/pages/home/locations/detailed_location.dart';
+import 'package:dish_connect/widgets/button.dart';
+import 'package:dish_connect/widgets/main_button.dart';
+import 'package:dish_connect/widgets/main_textfield.dart';
 import 'package:dish_connect/widgets/navigation_bar.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
@@ -27,20 +30,33 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
       floatingActionButton: FloatingActionButton(
         elevation: 0,
         onPressed: () {
-          Get.to(
-            LocationDetailedView(),
-            arguments: [
-              {
-                "location-key": "",
-                "location-type": "Add",
-                "location-image": "",
-                "location-street": "",
-                "location-city": "",
-                "location-zipcode": "",
-                "location-state": "",
-              },
-            ],
-          );
+          if (isSmall) {
+            Get.to(
+              LocationDetailedView(),
+              arguments: [
+                {
+                  "location-key": "",
+                  "location-type": "Add",
+                  "location-image": "",
+                  "location-street": "",
+                  "location-city": "",
+                  "location-zipcode": "",
+                  "location-state": "",
+                },
+              ],
+            );
+          } else {
+            showLocationPopup(
+              context,
+              "",
+              "",
+              "",
+              "",
+              0,
+              "",
+              false,
+            );
+          }
         },
         backgroundColor: mainBlue,
         child: Icon(
@@ -121,55 +137,69 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
                                   ],
                                 );
                               } else {
-                                print("large select");
+                                showLocationPopup(
+                                  context,
+                                  location.uid,
+                                  location.image,
+                                  location.street,
+                                  location.city,
+                                  location.zipcode,
+                                  location.state,
+                                  true,
+                                );
                               }
                             },
-                            child: Stack(
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: isLight ? blue100 : Colors.black,
-                                    borderRadius: BorderRadius.circular(
-                                      20,
-                                    ),
-                                  ),
-                                  height: 200,
-                                  width: 200,
-                                  child: ClipRRect(
-                                    child: Image.network(
-                                      location.image,
-                                      fit: BoxFit.cover,
-                                    ),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: 0,
-                                  left: 0,
-                                  right: 0,
-                                  child: Container(
-                                    width: 30,
+                            child: Container(
+                              child: Stack(
+                                children: [
+                                  Container(
                                     decoration: BoxDecoration(
                                       color: isLight ? blue100 : Colors.black,
-                                      borderRadius: BorderRadius.only(
-                                        bottomLeft: Radius.circular(
-                                          20,
-                                        ),
-                                        bottomRight: Radius.circular(
-                                          20,
-                                        ),
+                                      borderRadius: BorderRadius.circular(
+                                        20,
                                       ),
                                     ),
-                                    height: isSmall ? 44 : 67,
-                                    child: Center(
-                                      child: CustomText(
-                                        text: locations[index].street,
-                                        size: isSmall ? 12 : 15,
+                                    child: Expanded(
+                                      child: ClipRRect(
+                                        child: Image.network(
+                                          location.image,
+                                          fit: BoxFit.cover,
+                                        ),
+                                        borderRadius: BorderRadius.circular(20),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                  Container(
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color: isLight
+                                                ? blue100
+                                                : Colors.black,
+                                            borderRadius: BorderRadius.only(
+                                              bottomLeft: Radius.circular(
+                                                20,
+                                              ),
+                                              bottomRight: Radius.circular(
+                                                20,
+                                              ),
+                                            ),
+                                          ),
+                                          height: isSmall ? 44 : 67,
+                                          child: Center(
+                                            child: CustomText(
+                                              text: locations[index].street,
+                                              size: isSmall ? 12 : 15,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         );
@@ -186,6 +216,184 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
           ],
         ),
       ),
+    );
+  }
+
+  showLocationPopup(
+    BuildContext context,
+    String uid,
+    String image,
+    String street,
+    String city,
+    int zipcode,
+    String state,
+    bool isNew,
+  ) {
+    String imageName;
+    String title;
+    if (isNew) {
+      imageName = "Add Image";
+      title = "Add Location";
+    } else {
+      imageName = "Change Image";
+      title = "Edit Location";
+    }
+    return showDialog(
+      context: context,
+      builder: (context) {
+        var isLight = Theme.of(context).brightness == Brightness.light;
+        return Center(
+          child: Material(
+            type: MaterialType.transparency,
+            child: Container(
+              width: 427,
+              height: 676,
+              decoration: BoxDecoration(
+                color: isLight ? Colors.white : navy500,
+                borderRadius: BorderRadius.circular(
+                  20,
+                ),
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Stack(
+                      children: [
+                        CustomBackButton(),
+                        Center(
+                          child: smallNavigationBar(
+                            context,
+                            title,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Center(
+                      child: Container(
+                        height: 150,
+                        width: 150,
+                        decoration: BoxDecoration(
+                          color: isLight ? blue100 : Colors.black,
+                          borderRadius: BorderRadius.circular(
+                            20,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Center(
+                      child: MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: GestureDetector(
+                          child: Button(
+                            name: imageName,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(
+                        top: 20,
+                        left: 25,
+                        right: 25,
+                      ),
+                      child: MainTextField(
+                        hintText: "Street Name",
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                            top: 15,
+                            left: 25,
+                          ),
+                          child: Container(
+                            width: 427 - 220,
+                            child: MainTextField(
+                              hintText: "City",
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                            top: 15,
+                            right: 25,
+                          ),
+                          child: Container(
+                            width: 150,
+                            child: MainTextField(
+                              hintText: "Zipcode",
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(
+                        top: 15,
+                        left: 25,
+                        right: 25,
+                      ),
+                      child: MainTextField(
+                        hintText: "State",
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(
+                        top: 25,
+                        left: 25,
+                        right: 25,
+                      ),
+                      child: MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: GestureDetector(
+                          child: MainButton(
+                            text: "Save",
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 30,
+                    ),
+                    if (isNew)
+                      Center(
+                        child: MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: GestureDetector(
+                            onTap: () {
+                              print("remove");
+                            },
+                            child: Button(
+                              name: "Remove Location",
+                              color: Colors.red,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
