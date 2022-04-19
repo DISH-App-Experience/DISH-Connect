@@ -1,6 +1,8 @@
 import 'package:dish_connect/constants/colors.dart';
 import 'package:dish_connect/widgets/button.dart';
 import 'package:dish_connect/widgets/custom_back_button.dart';
+import 'package:dish_connect/widgets/main_button.dart';
+import 'package:dish_connect/widgets/main_textfield.dart';
 import 'package:dish_connect/widgets/navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -65,7 +67,85 @@ class _LocationDetailedViewState extends State<LocationDetailedView> {
             ),
             Center(
               child: Button(name: imageType),
-            )
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Padding(
+              padding: EdgeInsets.only(
+                top: 20,
+                left: 25,
+                right: 25,
+              ),
+              child: MainTextField(
+                hintText: "Street Name",
+              ),
+            ),
+            Row(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(
+                    top: 15,
+                    left: 25,
+                  ),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width - 220,
+                    child: MainTextField(
+                      hintText: "City",
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 20,
+                ),
+                Padding(
+                  padding: EdgeInsets.only(
+                    top: 15,
+                    right: 25,
+                  ),
+                  child: Container(
+                    width: 150,
+                    child: MainTextField(
+                      hintText: "Zipcode",
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Padding(
+              padding: EdgeInsets.only(
+                top: 15,
+                left: 25,
+                right: 25,
+              ),
+              child: MainTextField(
+                hintText: "State",
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(
+                top: 25,
+                left: 25,
+                right: 25,
+              ),
+              child: MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  child: MainButton(
+                    text: "Save",
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 30,
+            ),
+            Center(
+              child: Button(
+                name: "Remove Location",
+                color: Colors.red,
+              ),
+            ),
           ],
         ),
       ),

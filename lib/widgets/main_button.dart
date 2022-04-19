@@ -19,20 +19,23 @@ class MainButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: function,
-      child: Container(
-        height: 45,
-        decoration: BoxDecoration(
-          color: mainBlue,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Center(
-          child: CustomText(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            size: 15,
-            text: text,
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: InkWell(
+        onTap: function,
+        child: Container(
+          height: 45,
+          decoration: BoxDecoration(
+            color: mainBlue,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Center(
+            child: CustomText(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              size: 15,
+              text: text,
+            ),
           ),
         ),
       ),

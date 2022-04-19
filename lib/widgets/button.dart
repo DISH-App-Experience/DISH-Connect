@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 
 class Button extends StatelessWidget {
   final String name;
+  final Color? color;
   const Button({
     Key? key,
     required this.name,
+    this.color,
   }) : super(key: key);
 
   @override
@@ -16,7 +18,7 @@ class Button extends StatelessWidget {
         text: name,
         size: 15,
         fontWeight: FontWeight.w600,
-        color: mainBlue,
+        color: color ?? mainBlue,
       ),
     );
   }
