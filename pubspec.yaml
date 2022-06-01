@@ -35,6 +35,7 @@ dependencies:
   image_cropper: ^1.5.0
   universal_html: ^2.0.8
   http:
+  geocode: ^1.0.1
   # cyclop:
   #   git: https://github.com/JorgeZapata27/cyclop
 

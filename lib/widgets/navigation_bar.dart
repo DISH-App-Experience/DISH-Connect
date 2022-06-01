@@ -25,7 +25,6 @@ Widget smallNavigationBar(BuildContext context, String title) => Container(
         child: CustomText(
           fontWeight: FontWeight.bold,
           size: 17,
-          text: title,
         ),
       ),
     );
