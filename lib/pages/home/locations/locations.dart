@@ -1,18 +1,24 @@
+import 'dart:io';
 import 'package:dish_connect/helpers/global_variables.dart';
 import 'package:dish_connect/models/location.dart';
 import 'package:dish_connect/pages/home/locations/detailed_location.dart';
 import 'package:dish_connect/widgets/button.dart';
+import 'package:dish_connect/widgets/custom_cancel_button.dart';
 import 'package:dish_connect/widgets/main_button.dart';
 import 'package:dish_connect/widgets/main_textfield.dart';
 import 'package:dish_connect/widgets/navigation_bar.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:dish_connect/constants/colors.dart';
 import 'package:dish_connect/widgets/custom_back_button.dart';
 import 'package:dish_connect/widgets/custom_text.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'package:geocode/geocode.dart';
+import 'package:image_picker/image_picker.dart';
 
 class LocationManagerPage extends StatefulWidget {
   const LocationManagerPage({Key? key}) : super(key: key);
@@ -22,10 +28,78 @@ class LocationManagerPage extends StatefulWidget {
 }
 
 class _LocationManagerPageState extends State<LocationManagerPage> {
+  TextEditingController streetController = TextEditingController();
+  TextEditingController cityController = TextEditingController();
+  TextEditingController zipcodeController = TextEditingController();
+  TextEditingController stateController = TextEditingController();
+  FirebaseStorage storage = FirebaseStorage.instance;
+  GeoCode geoCode = GeoCode();
+
+  void updateLocation(
+    bool isNew,
+    String uid,
+  ) async {
+    EasyLoading.show(status: "Saving...");
+    var city = cityController.text;
+    var state = stateController.text;
+    var street = streetController.text;
+    var zipcode = zipcodeController.text;
+
+    if ((city != "") && (state != "") && (street != "") && (zipcode != "")) {
+      try {
+        Coordinates coordinates = await geoCode.forwardGeocoding(
+            address: "${street}, ${city}, ${state} ${zipcode}");
+        print("lat: ${coordinates.latitude}");
+        print("long: ${coordinates.longitude}");
+        var lat = coordinates.latitude;
+        var long = coordinates.longitude;
+        print("city: ${city}");
+        print("state: ${state}");
+        print("street: ${street}");
+        print("zipcode: ${zipcode}");
+        if (isNew) {
+          final key = locationRef.push().key;
+          final postData = {
+            'city': city,
+            // 'image': uid,
+            'lat': lat,
+            'long': long,
+            'state': state,
+            'street': street,
+            'uid': key,
+            'zip': int.parse(zipcode),
+          };
+          locationRef.child(key!).update(postData);
+        } else {
+          final key = uid;
+          final postData = {
+            'city': city,
+            // 'image': uid,
+            'lat': lat,
+            'long': long,
+            'state': state,
+            'street': street,
+            'uid': key,
+            'zip': int.parse(zipcode),
+          };
+          locationRef.child(key).update(postData);
+        }
+        EasyLoading.showSuccess("Success");
+      } catch (e) {
+        EasyLoading.dismiss();
+        EasyLoading.showError("Error: ${e}");
+      }
+    } else {
+      EasyLoading.dismiss();
+      EasyLoading.showError("Please make sure all fields are filled in!");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var isLight = Theme.of(context).brightness == Brightness.light;
     var isSmall = MediaQuery.of(context).size.width < 1210;
+
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         elevation: 0,
@@ -54,7 +128,7 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
               "",
               0,
               "",
-              false,
+              true,
             );
           }
         },
@@ -90,10 +164,7 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
                         (snapshot.data! as DatabaseEvent).snapshot.value
                             as Map<dynamic, dynamic>);
                     myImages.forEach((key, value) {
-                      print("fioudn location");
                       final cur = Map<String, dynamic>.from(value);
-                      print("city");
-                      print(cur["city"]);
                       locations.add(
                         Location(
                           cur["city"],
@@ -145,60 +216,64 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
                                   location.city,
                                   location.zipcode,
                                   location.state,
-                                  true,
+                                  false,
                                 );
                               }
                             },
                             child: Container(
-                              child: Stack(
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: isLight ? blue100 : Colors.black,
-                                      borderRadius: BorderRadius.circular(
-                                        20,
-                                      ),
-                                    ),
-                                    child: Expanded(
-                                      child: ClipRRect(
-                                        child: Image.network(
-                                          location.image,
-                                          fit: BoxFit.cover,
-                                        ),
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            color: isLight
-                                                ? blue100
-                                                : Colors.black,
-                                            borderRadius: BorderRadius.only(
-                                              bottomLeft: Radius.circular(
-                                                20,
-                                              ),
-                                              bottomRight: Radius.circular(
-                                                20,
-                                              ),
+                              decoration: BoxDecoration(
+                                color: isLight ? blue100 : Colors.black,
+                                borderRadius: BorderRadius.circular(
+                                  20,
+                                ),
+                              ),
+                              child: Container(
+                                height: 200,
+                                width: 200,
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(
+                                              10,
+                                            ),
+                                            topRight: Radius.circular(
+                                              10,
                                             ),
                                           ),
-                                          height: isSmall ? 44 : 67,
-                                          child: Center(
-                                            child: CustomText(
-                                              text: locations[index].street,
-                                              size: isSmall ? 12 : 15,
-                                            ),
+                                          image: DecorationImage(
+                                            fit: BoxFit.fill,
+                                            image: NetworkImage(
+                                                locations[index].image),
                                           ),
                                         ),
-                                      ],
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                    Container(
+                                      alignment: Alignment.center,
+                                      padding: const EdgeInsets.all(8.0),
+                                      height: isSmall ? 44 : 67,
+                                      decoration: BoxDecoration(
+                                        color: isLight
+                                            ? Color(0xFFF2F2F2)
+                                            : Colors.black,
+                                        borderRadius: BorderRadius.only(
+                                          bottomLeft: Radius.circular(20.0),
+                                          bottomRight: Radius.circular(20.0),
+                                        ),
+                                      ),
+                                      child: CustomText(
+                                        text: locations[index].street,
+                                        size: isSmall ? 12 : 15,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -231,12 +306,22 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
   ) {
     String imageName;
     String title;
+    bool imageNull;
     if (isNew) {
       imageName = "Add Image";
       title = "Add Location";
     } else {
       imageName = "Change Image";
       title = "Edit Location";
+    }
+    streetController.text = street;
+    cityController.text = city;
+    zipcodeController.text = "${zipcode}";
+    stateController.text = state;
+    if (image != "") {
+      imageNull = false;
+    } else {
+      imageNull = true;
     }
     return showDialog(
       context: context,
@@ -263,7 +348,7 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
                     ),
                     Stack(
                       children: [
-                        CustomBackButton(),
+                        CustomCancelButton(),
                         Center(
                           child: smallNavigationBar(
                             context,
@@ -285,6 +370,15 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
                             20,
                           ),
                         ),
+                        child: imageNull
+                            ? Container()
+                            : ClipRRect(
+                                child: Image.network(
+                                  image,
+                                  fit: BoxFit.cover,
+                                ),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
                       ),
                     ),
                     SizedBox(
@@ -310,6 +404,7 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
                         right: 25,
                       ),
                       child: MainTextField(
+                        controller: streetController,
                         hintText: "Street Name",
                       ),
                     ),
@@ -323,6 +418,7 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
                           child: Container(
                             width: 427 - 220,
                             child: MainTextField(
+                              controller: cityController,
                               hintText: "City",
                             ),
                           ),
@@ -338,6 +434,7 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
                           child: Container(
                             width: 150,
                             child: MainTextField(
+                              controller: zipcodeController,
                               hintText: "Zipcode",
                             ),
                           ),
@@ -351,6 +448,7 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
                         right: 25,
                       ),
                       child: MainTextField(
+                        controller: stateController,
                         hintText: "State",
                       ),
                     ),
@@ -360,28 +458,57 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
                         left: 25,
                         right: 25,
                       ),
-                      child: MouseRegion(
-                        cursor: SystemMouseCursors.click,
-                        child: GestureDetector(
-                          child: MainButton(
-                            text: "Save",
-                          ),
+                      child: GestureDetector(
+                        child: MainButton(
+                          text: "Save",
+                          function: () {
+                            updateLocation(
+                              isNew,
+                              isNew ? "" : uid,
+                            );
+                          },
                         ),
                       ),
                     ),
                     SizedBox(
                       height: 30,
                     ),
-                    if (isNew)
+                    if (!isNew)
                       Center(
                         child: MouseRegion(
                           cursor: SystemMouseCursors.click,
                           child: GestureDetector(
                             onTap: () {
-                              print("remove");
+                              showCupertinoDialog<void>(
+                                context: context,
+                                builder: (BuildContext context) =>
+                                    CupertinoAlertDialog(
+                                  title: const Text('Wait!'),
+                                  content: const Text(
+                                    'Are you sure you want to delete this location?',
+                                  ),
+                                  actions: <CupertinoDialogAction>[
+                                    CupertinoDialogAction(
+                                      child: const Text('No, cancel'),
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                    CupertinoDialogAction(
+                                      child: const Text('Yes'),
+                                      isDestructiveAction: true,
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        Navigator.pop(context);
+                                        locationRef.child(uid).remove();
+                                      },
+                                    )
+                                  ],
+                                ),
+                              );
                             },
                             child: Button(
-                              name: "Remove Location",
+                              name: "Delete Location",
                               color: Colors.red,
                             ),
                           ),

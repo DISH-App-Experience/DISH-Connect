@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:dish_connect/helpers/global_variables.dart';
 import 'package:dish_connect/models/image.dart';
 import 'package:dish_connect/pages/home/gallery/view_image.dart';
-import 'package:dish_connect/pages/home/gallery/web_images.dart';
 import 'package:dish_connect/routing/routes.dart';
 import 'package:dish_connect/services/image_services.dart';
 import 'package:dish_connect/services/web_work.dart';
