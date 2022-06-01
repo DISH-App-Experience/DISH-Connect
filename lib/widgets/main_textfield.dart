@@ -40,7 +40,7 @@ class MainTextField extends StatelessWidget {
       cursorWidth: 2,
       style: TextStyle(
         fontFamily: 'Inter',
-        fontWeight: FontWeight.w500,
+        fontWeight: FontWeight.bold,
         fontSize: 15,
       ),
       decoration: InputDecoration(

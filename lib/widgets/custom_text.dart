@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:dish_connect/constants/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -21,7 +23,7 @@ class CustomText extends StatelessWidget {
       text ?? "",
       textAlign: align,
       style: TextStyle(
-        fontFamily: 'Inter',
+        fontFamily: (fontWeight == FontWeight.bold) ? 'InterBold' : 'Inter',
         fontSize: size ?? 16,
         color: color ?? defaultColor,
         fontWeight: fontWeight ?? FontWeight.normal,

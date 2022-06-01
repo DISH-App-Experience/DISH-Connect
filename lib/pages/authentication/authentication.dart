@@ -118,16 +118,17 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                     text: TextSpan(
                       children: [
                         TextSpan(
-                          text: "Easy to use restaurant app? ",
+                          text: "Easy to use restaurant app?  ",
                           style: TextStyle(
                             color: isLight ? Colors.black : Colors.white,
+                            fontFamily: "Inter",
                           ),
                         ),
                         TextSpan(
                           text: "Learn More! ",
                           style: TextStyle(
                             color: mainBlue,
-                            fontWeight: FontWeight.bold,
+                            fontFamily: "InterBold",
                           ),
                         ),
                       ],
