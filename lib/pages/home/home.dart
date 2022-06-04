@@ -304,7 +304,7 @@ class _HomePageState extends State<HomePage> {
                       color: Colors.transparent,
                       width:
                           ((screenWidth - 500) - (screenWidth * (1 / 5)) - 55),
-                      height: 600,
+                      height: ((MediaQuery.of(context).size.width - 75) / 2),
                       child: GridView.count(
                         children: [
                           webSquare("🎨", "Customize", "Theme", context),

@@ -46,3 +46,30 @@ uploadToStorage() async {
     print("not done");
   }
 }
+
+Future<String?> urlFromWebImage() async {
+  final result = await FilePicker.platform.pickFiles(
+    type: FileType.image,
+    allowMultiple: false,
+  );
+  if (result != null && result.files.isNotEmpty) {
+    print("done");
+    final newPostKey = FirebaseDatabase.instance
+        .ref()
+        .child("App")
+        .child(owner!.appId)
+        .child("locations")
+        .push()
+        .key;
+    final fileBytes = result.files.first.bytes;
+    final fileName = result.files.first.name;
+    // upload file
+    await FirebaseStorage.instance
+        .ref('App/${owner!.appId}/locations/${newPostKey}')
+        .putData(fileBytes!);
+    String downloadURL = await FirebaseStorage.instance
+        .ref('App/${owner!.appId}/locations/${newPostKey}')
+        .getDownloadURL();
+    return downloadURL;
+  }
+}
