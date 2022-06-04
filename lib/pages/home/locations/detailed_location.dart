@@ -103,69 +103,57 @@ class _LocationDetailedViewState extends State<LocationDetailedView> {
     var zipcode = zipcodeController.text;
 
     if ((city != "") && (state != "") && (street != "") && (zipcode != "")) {
-      try {
-        Coordinates coordinates = await geoCode.forwardGeocoding(
-            address: "${street}, ${city}, ${state} ${zipcode}");
-        print("lat: ${coordinates.latitude}");
-        print("long: ${coordinates.longitude}");
-        var lat = coordinates.latitude;
-        var long = coordinates.longitude;
-        print("city: ${city}");
-        print("state: ${state}");
-        print("street: ${street}");
-        print("zipcode: ${zipcode}");
-        print("download url: ${downloadURL}");
+      print("city: ${city}");
+      print("state: ${state}");
+      print("street: ${street}");
+      print("zipcode: ${zipcode}");
+      print("download url: ${downloadURL}");
 
-        if (isNew) {
-          if (downloadURL != "") {
-            final key = locationRef.push().key;
-            final postData = {
-              'city': city,
-              'image': downloadURL,
-              'lat': lat,
-              'long': long,
-              'state': state,
-              'street': street,
-              'uid': key,
-              'zip': int.parse(zipcode),
-            };
-            locationRef.child(key!).update(postData);
-            EasyLoading.showSuccess("Success!!");
-          } else {
-            EasyLoading.dismiss();
-            EasyLoading.showError("Error, please select an image");
-          }
+      if (isNew) {
+        if (downloadURL != "") {
+          final key = locationRef.push().key;
+          final postData = {
+            'city': city,
+            'image': downloadURL,
+            'state': state,
+            'street': street,
+            'uid': key,
+            'zip': int.parse(zipcode),
+          };
+          locationRef.child(key!).update(postData);
+          EasyLoading.showSuccess("Success!!");
+          Navigator.of(context).pop();
         } else {
-          if (downloadURL != "") {
-            final key = uid;
-            final postData = {
-              'city': city,
-              'image': downloadURL,
-              'lat': lat,
-              'long': long,
-              'state': state,
-              'street': street,
-              'uid': key,
-              'zip': int.parse(zipcode),
-            };
-            locationRef.child(key).update(postData);
-          } else {
-            final key = uid;
-            final postData = {
-              'city': city,
-              'lat': lat,
-              'long': long,
-              'state': state,
-              'street': street,
-              'uid': key,
-              'zip': int.parse(zipcode),
-            };
-            locationRef.child(key).update(postData);
-          }
+          EasyLoading.dismiss();
+          EasyLoading.showError("Error, please select an image");
         }
-      } catch (e) {
-        EasyLoading.dismiss();
-        EasyLoading.showError("Error: ${e}");
+      } else {
+        if (downloadURL != "") {
+          final key = uid;
+          final postData = {
+            'city': city,
+            'image': downloadURL,
+            'state': state,
+            'street': street,
+            'uid': key,
+            'zip': int.parse(zipcode),
+          };
+          locationRef.child(key).update(postData);
+          EasyLoading.showSuccess("Success!!");
+          Navigator.of(context).pop();
+        } else {
+          final key = uid;
+          final postData = {
+            'city': city,
+            'state': state,
+            'street': street,
+            'uid': key,
+            'zip': int.parse(zipcode),
+          };
+          locationRef.child(key).update(postData);
+          EasyLoading.showSuccess("Success!!");
+          Navigator.of(context).pop();
+        }
       }
     } else {
       EasyLoading.dismiss();
@@ -192,6 +180,7 @@ class _LocationDetailedViewState extends State<LocationDetailedView> {
       String city = argumentData[0]["location-city"];
       int zipcode = argumentData[0]["location-zipcode"];
       String state = argumentData[0]["location-state"];
+      downloadURL = argumentData[0]["location-image"];
       streetController.text = street;
       cityController.text = city;
       zipcodeController.text = "${zipcode}";
@@ -303,6 +292,7 @@ class _LocationDetailedViewState extends State<LocationDetailedView> {
                     width: 150,
                     child: MainTextField(
                       controller: zipcodeController,
+                      keyboardType: TextInputType.number,
                       hintText: "Zipcode",
                     ),
                   ),

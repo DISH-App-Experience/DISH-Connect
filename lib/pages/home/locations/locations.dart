@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:dish_connect/helpers/global_variables.dart';
 import 'package:dish_connect/models/location.dart';
 import 'package:dish_connect/pages/home/locations/detailed_location.dart';
+import 'package:dish_connect/services/web_work.dart';
 import 'package:dish_connect/widgets/button.dart';
 import 'package:dish_connect/widgets/custom_cancel_button.dart';
 import 'package:dish_connect/widgets/main_button.dart';
@@ -33,7 +34,28 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
   TextEditingController zipcodeController = TextEditingController();
   TextEditingController stateController = TextEditingController();
   FirebaseStorage storage = FirebaseStorage.instance;
-  GeoCode geoCode = GeoCode();
+  String downloadURL = "";
+
+  bool isNew = false;
+  final newKey = locationRef.push().key;
+  String key = "";
+
+  Future _uploadFile(String path) async {
+    String filePath = "";
+    final FirebaseStorage _storage = FirebaseStorage.instance;
+    if (isNew) {
+      filePath = "App/${owner!.appId}/locations/${newKey}";
+    } else {
+      filePath = "App/${owner!.appId}/locations/${key}";
+    }
+    final result = await _storage.ref(filePath).putFile(File(path));
+    final fileUrl = await _storage.ref(filePath).getDownloadURL();
+    print("DONE SUCCESS!");
+    print(fileUrl);
+    setState(() {
+      downloadURL = fileUrl;
+    });
+  }
 
   void updateLocation(
     bool isNew,
@@ -46,37 +68,39 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
     var zipcode = zipcodeController.text;
 
     if ((city != "") && (state != "") && (street != "") && (zipcode != "")) {
-      try {
-        Coordinates coordinates = await geoCode.forwardGeocoding(
-            address: "${street}, ${city}, ${state} ${zipcode}");
-        print("lat: ${coordinates.latitude}");
-        print("long: ${coordinates.longitude}");
-        var lat = coordinates.latitude;
-        var long = coordinates.longitude;
-        print("city: ${city}");
-        print("state: ${state}");
-        print("street: ${street}");
-        print("zipcode: ${zipcode}");
-        if (isNew) {
+      print("city: ${city}");
+      print("state: ${state}");
+      print("street: ${street}");
+      print("zipcode: ${zipcode}");
+      if (isNew) {
+        if (downloadURL != "") {
           final key = locationRef.push().key;
           final postData = {
             'city': city,
-            // 'image': uid,
-            'lat': lat,
-            'long': long,
+            'image': downloadURL,
             'state': state,
             'street': street,
             'uid': key,
             'zip': int.parse(zipcode),
           };
           locationRef.child(key!).update(postData);
+        }
+      } else {
+        if (downloadURL != "") {
+          final key = uid;
+          final postData = {
+            'city': city,
+            'image': downloadURL,
+            'state': state,
+            'street': street,
+            'uid': key,
+            'zip': int.parse(zipcode),
+          };
+          locationRef.child(key).update(postData);
         } else {
           final key = uid;
           final postData = {
             'city': city,
-            // 'image': uid,
-            'lat': lat,
-            'long': long,
             'state': state,
             'street': street,
             'uid': key,
@@ -84,11 +108,8 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
           };
           locationRef.child(key).update(postData);
         }
-        EasyLoading.showSuccess("Success");
-      } catch (e) {
-        EasyLoading.dismiss();
-        EasyLoading.showError("Error: ${e}");
       }
+      EasyLoading.showSuccess("Success");
     } else {
       EasyLoading.dismiss();
       EasyLoading.showError("Please make sure all fields are filled in!");
@@ -169,8 +190,6 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
                         Location(
                           cur["city"],
                           cur["image"],
-                          cur["lat"],
-                          cur["long"],
                           cur["state"],
                           cur["street"],
                           cur["uid"],
@@ -246,7 +265,7 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
                                             ),
                                           ),
                                           image: DecorationImage(
-                                            fit: BoxFit.fill,
+                                            fit: BoxFit.cover,
                                             image: NetworkImage(
                                                 locations[index].image),
                                           ),
@@ -308,11 +327,14 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
     String title;
     bool imageNull;
     if (isNew) {
+      isNew = true;
       imageName = "Add Image";
       title = "Add Location";
     } else {
+      isNew = false;
       imageName = "Change Image";
       title = "Edit Location";
+      key = uid;
     }
     streetController.text = street;
     cityController.text = city;
@@ -388,6 +410,13 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
                       child: MouseRegion(
                         cursor: SystemMouseCursors.click,
                         child: GestureDetector(
+                          onTap: () async {
+                            String? imageUrl = await urlFromWebImage();
+                            print(imageUrl);
+                            setState(() {
+                              downloadURL = imageUrl!;
+                            });
+                          },
                           child: Button(
                             name: imageName,
                           ),
@@ -435,6 +464,7 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
                             width: 150,
                             child: MainTextField(
                               controller: zipcodeController,
+                              keyboardType: TextInputType.number,
                               hintText: "Zipcode",
                             ),
                           ),
