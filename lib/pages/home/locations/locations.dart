@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:dish_connect/helpers/global_variables.dart';
 import 'package:dish_connect/models/location.dart';
 import 'package:dish_connect/pages/home/locations/detailed_location.dart';
+import 'package:dish_connect/pages/home/locations/location_popup.dart';
+import 'package:dish_connect/pages/home/locations/new_location_popup.dart';
 import 'package:dish_connect/services/web_work.dart';
 import 'package:dish_connect/widgets/button.dart';
 import 'package:dish_connect/widgets/custom_cancel_button.dart';
@@ -35,27 +37,11 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
   TextEditingController stateController = TextEditingController();
   FirebaseStorage storage = FirebaseStorage.instance;
   String downloadURL = "";
+  bool loading = false;
 
   bool isNew = false;
   final newKey = locationRef.push().key;
   String key = "";
-
-  Future _uploadFile(String path) async {
-    String filePath = "";
-    final FirebaseStorage _storage = FirebaseStorage.instance;
-    if (isNew) {
-      filePath = "App/${owner!.appId}/locations/${newKey}";
-    } else {
-      filePath = "App/${owner!.appId}/locations/${key}";
-    }
-    final result = await _storage.ref(filePath).putFile(File(path));
-    final fileUrl = await _storage.ref(filePath).getDownloadURL();
-    print("DONE SUCCESS!");
-    print(fileUrl);
-    setState(() {
-      downloadURL = fileUrl;
-    });
-  }
 
   void updateLocation(
     bool isNew,
@@ -116,203 +102,6 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    var isLight = Theme.of(context).brightness == Brightness.light;
-    var isSmall = MediaQuery.of(context).size.width < 1210;
-
-    return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        elevation: 0,
-        onPressed: () {
-          if (isSmall) {
-            Get.to(
-              LocationDetailedView(),
-              arguments: [
-                {
-                  "location-key": "",
-                  "location-type": "Add",
-                  "location-image": "",
-                  "location-street": "",
-                  "location-city": "",
-                  "location-zipcode": "",
-                  "location-state": "",
-                },
-              ],
-            );
-          } else {
-            showLocationPopup(
-              context,
-              "",
-              "",
-              "",
-              "",
-              0,
-              "",
-              true,
-            );
-          }
-        },
-        backgroundColor: mainBlue,
-        child: Icon(
-          Icons.add,
-          color: Colors.white,
-        ),
-      ),
-      backgroundColor: isLight ? Colors.white : navy500,
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CustomBackButton(),
-            navigationBar(
-              context,
-              "Locations",
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                top: 42,
-                left: 25,
-                right: 25,
-              ),
-              child: StreamBuilder(
-                stream: locationRef.onValue,
-                builder: (context, snapshot) {
-                  List<Location> locations = [];
-                  if (snapshot.hasData && !snapshot.hasError) {
-                    final myImages = Map<dynamic, dynamic>.from(
-                        (snapshot.data! as DatabaseEvent).snapshot.value
-                            as Map<dynamic, dynamic>);
-                    myImages.forEach((key, value) {
-                      final cur = Map<String, dynamic>.from(value);
-                      locations.add(
-                        Location(
-                          cur["city"],
-                          cur["image"],
-                          cur["state"],
-                          cur["street"],
-                          cur["uid"],
-                          cur["zip"],
-                        ),
-                      );
-                    });
-                    return GridView.builder(
-                      shrinkWrap: true,
-                      itemCount: locations.length,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: isSmall ? 2 : 4,
-                        mainAxisSpacing: isSmall ? 12.5 : 37,
-                        crossAxisSpacing: isSmall ? 12.5 : 37,
-                      ),
-                      itemBuilder: (context, index) {
-                        Location location = locations[index];
-                        return MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          child: GestureDetector(
-                            onTap: () {
-                              if (isSmall) {
-                                Get.to(
-                                  LocationDetailedView(),
-                                  arguments: [
-                                    {
-                                      "location-key": location.uid,
-                                      "location-type": "View",
-                                      "location-image": location.image,
-                                      "location-street": location.street,
-                                      "location-city": location.city,
-                                      "location-zipcode": location.zipcode,
-                                      "location-state": location.state,
-                                    },
-                                  ],
-                                );
-                              } else {
-                                showLocationPopup(
-                                  context,
-                                  location.uid,
-                                  location.image,
-                                  location.street,
-                                  location.city,
-                                  location.zipcode,
-                                  location.state,
-                                  false,
-                                );
-                              }
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: isLight ? blue100 : Colors.black,
-                                borderRadius: BorderRadius.circular(
-                                  20,
-                                ),
-                              ),
-                              child: Container(
-                                height: 200,
-                                width: 200,
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    Expanded(
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(
-                                              10,
-                                            ),
-                                            topRight: Radius.circular(
-                                              10,
-                                            ),
-                                          ),
-                                          image: DecorationImage(
-                                            fit: BoxFit.cover,
-                                            image: NetworkImage(
-                                                locations[index].image),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      alignment: Alignment.center,
-                                      padding: const EdgeInsets.all(8.0),
-                                      height: isSmall ? 44 : 67,
-                                      decoration: BoxDecoration(
-                                        color: isLight
-                                            ? Color(0xFFF2F2F2)
-                                            : Colors.black,
-                                        borderRadius: BorderRadius.only(
-                                          bottomLeft: Radius.circular(20.0),
-                                          bottomRight: Radius.circular(20.0),
-                                        ),
-                                      ),
-                                      child: CustomText(
-                                        text: locations[index].street,
-                                        size: isSmall ? 12 : 15,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  } else {
-                    return Center(
-                      child: CupertinoActivityIndicator(),
-                    );
-                  }
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   showLocationPopup(
     BuildContext context,
     String uid,
@@ -338,7 +127,11 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
     }
     streetController.text = street;
     cityController.text = city;
-    zipcodeController.text = "${zipcode}";
+    if (zipcode != 0) {
+      zipcodeController.text = "${zipcode}";
+    } else {
+      zipcodeController.text = "";
+    }
     stateController.text = state;
     if (image != "") {
       imageNull = false;
@@ -551,6 +344,203 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
           ),
         );
       },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var isLight = Theme.of(context).brightness == Brightness.light;
+    var isSmall = MediaQuery.of(context).size.width < 1210;
+
+    return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        elevation: 0,
+        onPressed: () {
+          if (isSmall) {
+            Get.to(
+              LocationDetailedView(),
+              arguments: [
+                {
+                  "location-key": "",
+                  "location-type": "Add",
+                  "location-image": "",
+                  "location-street": "",
+                  "location-city": "",
+                  "location-zipcode": "",
+                  "location-state": "",
+                },
+              ],
+            );
+          } else {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return NewLocationPopup();
+              },
+            );
+          }
+        },
+        backgroundColor: mainBlue,
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+      ),
+      backgroundColor: isLight ? Colors.white : navy500,
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CustomBackButton(),
+            navigationBar(
+              context,
+              "Locations",
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                top: 42,
+                left: 25,
+                right: 25,
+              ),
+              child: StreamBuilder(
+                stream: locationRef.onValue,
+                builder: (context, snapshot) {
+                  List<Location> locations = [];
+                  if (snapshot.hasData && !snapshot.hasError) {
+                    final myImages = Map<dynamic, dynamic>.from(
+                        (snapshot.data! as DatabaseEvent).snapshot.value
+                            as Map<dynamic, dynamic>);
+                    myImages.forEach((key, value) {
+                      final cur = Map<String, dynamic>.from(value);
+                      locations.add(
+                        Location(
+                          cur["city"],
+                          cur["image"],
+                          cur["state"],
+                          cur["street"],
+                          cur["uid"],
+                          cur["zip"],
+                        ),
+                      );
+                    });
+                    return GridView.builder(
+                      shrinkWrap: true,
+                      itemCount: locations.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: isSmall ? 2 : 4,
+                        mainAxisSpacing: isSmall ? 12.5 : 37,
+                        crossAxisSpacing: isSmall ? 12.5 : 37,
+                      ),
+                      itemBuilder: (context, index) {
+                        Location location = locations[index];
+                        return MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: GestureDetector(
+                            onTap: () {
+                              if (isSmall) {
+                                Get.to(
+                                  LocationDetailedView(),
+                                  arguments: [
+                                    {
+                                      "location-key": location.uid,
+                                      "location-type": "View",
+                                      "location-image": location.image,
+                                      "location-street": location.street,
+                                      "location-city": location.city,
+                                      "location-zipcode": location.zipcode,
+                                      "location-state": location.state,
+                                    },
+                                  ],
+                                );
+                              } else {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return LocationPopupWidget(
+                                      uid: location.uid,
+                                      image: location.image,
+                                      street: location.street,
+                                      city: location.city,
+                                      zipcode: location.zipcode,
+                                      state: location.state,
+                                      isNew: false,
+                                    );
+                                  },
+                                );
+                              }
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: isLight ? blue100 : Colors.black,
+                                borderRadius: BorderRadius.circular(
+                                  20,
+                                ),
+                              ),
+                              child: Container(
+                                height: 200,
+                                width: 200,
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(
+                                              10,
+                                            ),
+                                            topRight: Radius.circular(
+                                              10,
+                                            ),
+                                          ),
+                                          image: DecorationImage(
+                                            fit: BoxFit.cover,
+                                            image: NetworkImage(
+                                                locations[index].image),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Container(
+                                      alignment: Alignment.center,
+                                      padding: const EdgeInsets.all(8.0),
+                                      height: isSmall ? 44 : 67,
+                                      decoration: BoxDecoration(
+                                        color: isLight
+                                            ? Color(0xFFF2F2F2)
+                                            : Colors.black,
+                                        borderRadius: BorderRadius.only(
+                                          bottomLeft: Radius.circular(20.0),
+                                          bottomRight: Radius.circular(20.0),
+                                        ),
+                                      ),
+                                      child: CustomText(
+                                        text: locations[index].street,
+                                        size: isSmall ? 12 : 15,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  } else {
+                    return Center(
+                      child: CupertinoActivityIndicator(),
+                    );
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
