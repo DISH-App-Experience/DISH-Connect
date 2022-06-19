@@ -351,7 +351,6 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
   Widget build(BuildContext context) {
     var isLight = Theme.of(context).brightness == Brightness.light;
     var isSmall = MediaQuery.of(context).size.width < 1210;
-
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         elevation: 0,
