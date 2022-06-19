@@ -10,12 +10,14 @@ class MainButton extends StatelessWidget {
     this.function,
     this.widget,
     this.text,
+    this.textSize,
   }) : super(key: key);
 
   final Color? buttonColor;
   final Function()? function;
   final Widget? widget;
   final String? text;
+  final double? textSize;
 
   @override
   Widget build(BuildContext context) {
@@ -26,14 +28,14 @@ class MainButton extends StatelessWidget {
         child: Container(
           height: 45,
           decoration: BoxDecoration(
-            color: mainBlue,
+            color: buttonColor ?? mainBlue,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Center(
             child: CustomText(
               fontWeight: FontWeight.bold,
               color: Colors.white,
-              size: 15,
+              size: textSize ?? 15,
               text: text,
             ),
           ),
