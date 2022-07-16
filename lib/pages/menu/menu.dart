@@ -1,7 +1,9 @@
 import 'package:dish_connect/constants/colors.dart';
 import 'package:dish_connect/helpers/get_width.dart';
 import 'package:dish_connect/helpers/global_variables.dart';
+import 'package:dish_connect/models/menu_item.dart';
 import 'package:dish_connect/pages/menu/category_row.dart';
+import 'package:dish_connect/services/firebase_api.dart';
 import 'package:dish_connect/widgets/custom_text.dart';
 import 'package:dish_connect/widgets/menu/cat_container.dart';
 import 'package:dish_connect/widgets/navigation_bar.dart';
@@ -17,17 +19,17 @@ class MenuPage extends StatefulWidget {
   State<MenuPage> createState() => MenuPageState();
 }
 
-var categories = [];
+var menuCategories = FirebaseApi().getCategories();
+var menuItems = FirebaseApi().getMenuItems();
 
 class MenuPageState extends State<MenuPage> {
-  void getCategories() {}
+  var shouldBeShown = List<MenuItem>;
 
   @override
   Widget build(BuildContext context) {
     var isLight = Theme.of(context).brightness == Brightness.light;
     var isSmall = MediaQuery.of(context).size.width < 1210;
 
-    getCategories();
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         elevation: 0,
