@@ -1,5 +1,8 @@
 import 'dart:io';
 import 'package:dish_connect/helpers/global_variables.dart';
+import 'package:dish_connect/models/menu_category.dart';
+import 'package:dish_connect/models/menu_item.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -13,5 +16,16 @@ class FirebaseApi {
     } on FirebaseException catch (e) {
       return null;
     }
+  }
+
+  List<MenuCategory> getCategories() {
+    var ref = menuCategoryRef;
+    List<MenuCategory> list = [];
+    ref.once().then((snap) {});
+    return list;
+  }
+
+  List<MenuItem> getMenuItems() {
+    return [];
   }
 }

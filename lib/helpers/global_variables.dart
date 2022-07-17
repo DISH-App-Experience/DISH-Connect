@@ -22,3 +22,5 @@ final menuRef = rootRef.child("menu");
 final menuItemRef = menuRef.child("items");
 
 final menuCategoryRef = menuRef.child("categories");
+
+final featuresRef = rootRef.child("features");
